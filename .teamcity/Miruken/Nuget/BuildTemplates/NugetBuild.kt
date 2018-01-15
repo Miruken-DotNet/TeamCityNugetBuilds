@@ -16,6 +16,7 @@ class NugetSolution(
         val solutionFile:   String,
         val testAssemblies: String,
         val codeGithubUrl:  String,
+        val nugetApiKey:    String,
         val majorVersion:          String,
         val minorVersion:          String,
         val patchVersion:          String,
@@ -189,6 +190,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
         params {
             param("SHA", "")
+            param("NugetApiKey", solution.nugetApiKey)
         }
 
         for(nugetProject in solution.nugetProjects){
