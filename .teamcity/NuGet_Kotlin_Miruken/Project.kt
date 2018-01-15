@@ -74,4 +74,49 @@ object Project : Project({
                             packageName = "Miruken.Mvc.Wpf",
                             nuspecFile  = "Source\\Miruken.Mvc.Wpf\\Miruken.Mvc.Wpf.nuspec")
             ))))
+
+    subProject(configureNugetSolutionProject(NugetSolution(
+            guid              = "d8420070-ca13-4e71-886c-72d00f96d535",
+            parentId          = "NuGet_Kotlin_Miruken",
+            id                = "NuGet_Kotlin_Miruken_MirukenMediateSln",
+            name              = "Miruken.Mediate Solution",
+            codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.Mediate.git",
+            nugetApiKey       = "%MirukenNugetApiKey%",
+            solutionFile      = "Miruken.Mediate.sln",
+            testAssemblies    = """
+                                    Test\Miruken.Mediate.Tests\bin\Miruken.Mediate.Tests.dll
+                                    Test\Miruken.Mediate.Castle.Tests\bin\Miruken.Mediate.Castle.Tests.dll
+                                    Test\Miruken.Http.Tests\bin\Miruken.Http.Tests.dll
+                                    Test\Miruken.AspNet.Castle.Tests\bin\Miruken.AspNet.Castle.Tests.dll
+                                    Test\Example.Tests\bin\Example.Tests.dll
+                                """.trimIndent(),
+            majorVersion      = "1",
+            minorVersion      = "6",
+            patchVersion      = "1",
+            nugetProjects = listOf(
+                    NugetProject(
+                            id          = "MirukenMediate",
+                            packageName = "Miruken.Mediate",
+                            nuspecFile  = "Source\\Miruken.Mediate\\Miruken.Mediate.nuspec"),
+                    NugetProject(
+                            id          = "MirukenMediateCastle",
+                            packageName = "Miruken.Mediate.Castle",
+                            nuspecFile  = "Source\\Miruken.Mediate.Castle\\Miruken.Mediate.Castle.nuspec"),
+                    NugetProject(
+                            id          = "MirukenHttp",
+                            packageName = "Miruken.Http",
+                            nuspecFile  = "Source\\Miruken.Http\\Miruken.Http.nuspec"),
+                    NugetProject(
+                            id          = "MirukenAspNet",
+                            packageName = "Miruken.AspNet",
+                            nuspecFile  = "Source\\Miruken.AspNet\\Miruken.AspNet.nuspec"),
+                    NugetProject(
+                            id          = "MirukenAspNetCastle",
+                            packageName = "Miruken.AspNet.Castle",
+                            nuspecFile  = "Source\\Miruken.AspNet.Castle\\Miruken.AspNet.Castle.nuspec"),
+                    NugetProject(
+                            id          = "MirukenAspNetSwagger",
+                            packageName = "Miruken.AspNet.Swagger",
+                            nuspecFile  = "Source\\Miruken.AspNet.Swagger\\Miruken.AspNet.Swagger.nuspec")
+            ))))
 })
