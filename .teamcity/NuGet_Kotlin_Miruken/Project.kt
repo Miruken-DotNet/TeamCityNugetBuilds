@@ -17,7 +17,7 @@ object Project : Project({
             guid              = "50fcdffb-6d49-43d4-a0fc-8e6dbc47a532",
             parentId          = "NuGet_Kotlin_Miruken",
             id                = "NuGet_Kotlin_Miruken_MirukenSln",
-            name              = "Miruken Solution Kotlin",
+            name              = "Miruken Solution",
             codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.git",
             solutionFile      = "Miruken.sln",
             testAssemblies    = "**\\bin\\*Test*.dll",
