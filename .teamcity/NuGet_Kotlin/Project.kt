@@ -11,8 +11,8 @@ object Project : Project({
     uuid = "2326bc66-267d-4f5e-b4db-fb11f69453dd"
     id = "NuGet_Kotlin"
     parentId = "NuGet"
-    name = "kotlin"
-    description = "Build configured with Kotlin"
+    name = "Configured with Kotlin DSL"
+    description = "Builds configured with Kotlin Dsl"
 
     vcsRoot(NuGet_Kotlin_TeamCityNugetBuildsGit)
 
