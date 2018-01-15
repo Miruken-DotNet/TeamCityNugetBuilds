@@ -7,37 +7,37 @@ import jetbrains.buildServer.configs.kotlin.v2017_2.*
 import jetbrains.buildServer.configs.kotlin.v2017_2.Project
 
 object Project : Project({
-    uuid = "eea6b38a-724a-4304-a454-3b6cfb93bfdb"
-    id = "NuGet_Kotlin_Miruken"
-    parentId = "NuGet_Kotlin"
-    name = "Miruken"
+    uuid        = "eea6b38a-724a-4304-a454-3b6cfb93bfdb"
+    id          = "NuGet_Kotlin_Miruken"
+    parentId    = "NuGet_Kotlin"
+    name        = "Miruken"
     description = "Miruken-DotNet NuGet Pakages"
 
     subProject(configureNugetSolutionProject(NugetSolution(
-            guid = "2f710b99-d945-4072-b5dd-463fac99b976",
-            parentId = "NuGet_MirukenDotNet",
-            id = "NuGet_MirukenDotNet_MirukenSolutionKotlin",
-            name = "Miruken Solution Kotlin",
-            codeGithubUrl = "git@github.com:Miruken-DotNet/Miruken.git",
+            guid              = "50fcdffb-6d49-43d4-a0fc-8e6dbc47a532",
+            parentId          = "NuGet_Kotlin_Miruken",
+            id                = "NuGet_Kotlin_Miruken_MirukenSolutionKotlin",
+            name              = "Miruken Solution Kotlin",
+            codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.git",
             teamCityGithubUrl = "git@github.com:Miruken-DotNet/MirukenKotlinBuild.git",
-            solutionFile = "Miruken.sln",
-            testAssemblies = "**\\bin\\*Test*.dll",
+            solutionFile      = "Miruken.sln",
+            testAssemblies    = "**\\bin\\*Test*.dll",
             nugetProjects = listOf(
                     NugetProject(
-                            id = "Miruken",
+                            id          = "Miruken",
                             packageName = "Miruken",
-                            nuspecFile = "Source\\Miruken\\Miruken.nuspec"),
+                            nuspecFile  = "Source\\Miruken\\Miruken.nuspec"),
                     NugetProject(
-                            id = "MirukenCastle",
+                            id          = "MirukenCastle",
                             packageName = "Miruken.Castle",
-                            nuspecFile = "Source\\Miruken.Castle\\Miruken.Castle.nuspec"),
+                            nuspecFile  = "Source\\Miruken.Castle\\Miruken.Castle.nuspec"),
                     NugetProject(
-                            id = "MirukenValidate",
+                            id          = "MirukenValidate",
                             packageName = "Miruken.Validate",
-                            nuspecFile = "Source\\Miruken.Validate\\Miruken.Validate.nuspec"),
+                            nuspecFile  = "Source\\Miruken.Validate\\Miruken.Validate.nuspec"),
                     NugetProject(
-                            id = "MirukenValidateCastle",
+                            id          = "MirukenValidateCastle",
                             packageName = "Miruken.Validate.Castle",
-                            nuspecFile = "Source\\Miruken.Validate.Castle\\Miruken.Validate.Castle.nuspec")
+                            nuspecFile  = "Source\\Miruken.Validate.Castle\\Miruken.Validate.Castle.nuspec")
             ))))
 })
