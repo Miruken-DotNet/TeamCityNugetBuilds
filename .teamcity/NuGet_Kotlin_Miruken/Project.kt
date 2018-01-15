@@ -16,7 +16,7 @@ object Project : Project({
     subProject(configureNugetSolutionProject(NugetSolution(
             guid              = "50fcdffb-6d49-43d4-a0fc-8e6dbc47a532",
             parentId          = "NuGet_Kotlin_Miruken",
-            id                = "NuGet_Kotlin_Miruken_MirukenSolutionKotlin",
+            id                = "NuGet_Kotlin_Miruken_MirukenSln",
             name              = "Miruken Solution Kotlin",
             codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.git",
             teamCityGithubUrl = "git@github.com:Miruken-DotNet/MirukenKotlinBuild.git",
