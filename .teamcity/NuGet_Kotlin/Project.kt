@@ -12,7 +12,7 @@ object Project : Project({
     id = "NuGet_Kotlin"
     parentId = "NuGet"
     name = "Configured with Kotlin DSL"
-    description = "Builds configured with Kotlin Dsl"
+    description = ""
 
     vcsRoot(NuGet_Kotlin_TeamCityNugetBuildsGit)
 
