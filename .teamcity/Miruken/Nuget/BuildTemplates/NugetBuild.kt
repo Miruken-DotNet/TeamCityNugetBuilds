@@ -2,8 +2,6 @@ package Miruken.Nuget.BuildTemplates
 
 import jetbrains.buildServer.configs.kotlin.v2017_2.BuildType
 import jetbrains.buildServer.configs.kotlin.v2017_2.Project
-import jetbrains.buildServer.configs.kotlin.v2017_2.projectFeatures.VersionedSettings
-import jetbrains.buildServer.configs.kotlin.v2017_2.projectFeatures.versionedSettings
 import jetbrains.buildServer.configs.kotlin.v2017_2.vcs.GitVcsRoot
 import jetbrains.buildServer.configs.kotlin.v2017_2.triggers.VcsTrigger
 import jetbrains.buildServer.configs.kotlin.v2017_2.triggers.vcs
@@ -18,7 +16,9 @@ class NugetSolution(
         val solutionFile:   String,
         val testAssemblies: String,
         val codeGithubUrl:  String,
-        val teamCityGithubUrl: String,
+        val majorVersion:          String,
+        val minorVersion:          String,
+        val patchVersion:          String,
         val nugetProjects:  List<NugetProject>){
 
     val ciVcsRootId: String
@@ -72,16 +72,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         branch           = "%DefaultBranch%"
         branchSpec       = "%BranchSpecification%"
         agentCleanPolicy = GitVcsRoot.AgentCleanPolicy.ALWAYS
-        authMethod = uploadedKey {
-            uploadedKey = "provenstyle"
-        }
-    })
-
-    val teamCityVcsRoot = GitVcsRoot({
-        uuid = "${solution.guid}TeamCityVcsRoot"
-        id   = solution.teamCityVcsRootId
-        name = "${solution.teamCityGithubUrl}_TeamCity"
-        url  = solution.teamCityGithubUrl
         authMethod = uploadedKey {
             uploadedKey = "provenstyle"
         }
@@ -217,7 +207,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
         vcsRoot(ciVcsRoot)
         vcsRoot(releaseVcsRoot)
-        vcsRoot(teamCityVcsRoot)
 
         buildType(ciBuild)
         buildType(preReleaseBuild)
@@ -234,9 +223,9 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
             Build.zip!/packages => packages
             Build.zip!/${solution.solutionFile}
         """.trimIndent())
-            param("MajorVersion",        "1")
-            param("MinorVersion",        "11")
-            param("PatchVersion",        "18")
+            param("MajorVersion",        solution.majorVersion)
+            param("MinorVersion",        solution.minorVersion)
+            param("PatchVersion",        solution.patchVersion)
             param("PreReleaseProjectId", solution.preReleaseBuildId)
             param("ReleaseProjectId",    solution.releaseBuildId)
             param("Solution",            solution.solutionFile)
@@ -244,17 +233,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
             param("TestAssemblies",      solution.testAssemblies)
         }
 
-        features {
-            versionedSettings {
-                id                            = "${solution.id}_versionedSettings"
-                mode                          = VersionedSettings.Mode.ENABLED
-                buildSettingsMode             = VersionedSettings.BuildSettingsMode.PREFER_SETTINGS_FROM_VCS
-                rootExtId                     = teamCityVcsRoot.id
-                showChanges                   = false
-                settingsFormat                = VersionedSettings.Format.KOTLIN
-                storeSecureParamsOutsideOfVcs = true
-            }
-        }
         buildTypesOrder = arrayListOf(ciBuild, preReleaseBuild, releaseBuild)
         subProjectsOrder = arrayListOf(deploymentProject.id)
 

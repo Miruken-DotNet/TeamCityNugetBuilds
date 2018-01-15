@@ -19,9 +19,11 @@ object Project : Project({
             id                = "NuGet_Kotlin_Miruken_MirukenSln",
             name              = "Miruken Solution Kotlin",
             codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.git",
-            teamCityGithubUrl = "git@github.com:Miruken-DotNet/MirukenKotlinBuild.git",
             solutionFile      = "Miruken.sln",
             testAssemblies    = "**\\bin\\*Test*.dll",
+            majorVersion      = "1",
+            minorVersion      = "11",
+            patchVersion      = "18",
             nugetProjects = listOf(
                     NugetProject(
                             id          = "Miruken",
@@ -39,5 +41,35 @@ object Project : Project({
                             id          = "MirukenValidateCastle",
                             packageName = "Miruken.Validate.Castle",
                             nuspecFile  = "Source\\Miruken.Validate.Castle\\Miruken.Validate.Castle.nuspec")
+            ))))
+
+    subProject(configureNugetSolutionProject(NugetSolution(
+            guid              = "2847660e-819a-481f-924f-db2309e9d912",
+            parentId          = "NuGet_Kotlin_Miruken",
+            id                = "NuGet_Kotlin_Miruken_MirukenMvcSln",
+            name              = "Miruken.Mvc Solution",
+            codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.Mvc.git",
+            solutionFile      = "Miruken.Mvc.sln",
+            testAssemblies    = "**\\bin\\*Test*.dll",
+            majorVersion      = "1",
+            minorVersion      = "5",
+            patchVersion      = "2",
+            nugetProjects = listOf(
+                    NugetProject(
+                            id          = "MirukenMvc",
+                            packageName = "Miruken.Mvc",
+                            nuspecFile  = "Source\\Miruken.Mvc\\Miruken.Mvc.nuspec"),
+                    NugetProject(
+                            id          = "MirukenMvcCastle",
+                            packageName = "Miruken.Mvc.Castle",
+                            nuspecFile  = "Source\\Miruken.Mvc.Castle\\Miruken.Mvc.Castle.nuspec"),
+                    NugetProject(
+                            id          = "MirukenMvcConsole",
+                            packageName = "Miruken.Mvc.Console",
+                            nuspecFile  = "Source\\Miruken.Mvc.Console\\Miruken.Mvc.Console.nuspec"),
+                    NugetProject(
+                            id          = "MirukenMvcWpf",
+                            packageName = "Miruken.Mvc.Wpf",
+                            nuspecFile  = "Source\\Miruken.Mvc.Wpf\\Miruken.Mvc.Wpf.nuspec")
             ))))
 })
