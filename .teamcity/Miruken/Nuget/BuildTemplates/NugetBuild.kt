@@ -78,7 +78,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
     class stepRestoreNuGets : BuildStep({
         name = "Install NuGet Packages"
-        id   = "RUNNER_1"
         type = "jb.nuget.installer"
         param("toolPathSelector",          "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
         param("nuget.path",                "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
@@ -89,7 +88,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
     class stepCompile : VisualStudioStep({
         name                 = "Compile"
-        id                   = "RUNNER_2"
         path                 = "%Solution%"
         version              = VisualStudioStep.VisualStudioVersion.vs2017
         runPlatform          = VisualStudioStep.Platform.x86
@@ -101,7 +99,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
     })
 
     class stepTest : VSTestStep ({
-        id                   = "RUNNER_3"
         vstestPath           = "%teamcity.dotnet.vstest.14.0%"
         includeTestFileNames = "%TestAssemblies%"
         runSettings          = "%VSTestRunSettings%"
@@ -114,7 +111,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
     class stepIncrementVerison : PowerShellStep({
         name      = "Increment PatchVersion And Reset Build Counters"
-        id        = "RUNNER_21"
         platform  = PowerShellStep.Platform.x86
         edition   = PowerShellStep.Edition.Desktop
         noProfile = false
@@ -161,7 +157,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
     class stepTagBuild : PowerShellStep( {
         name      = "Tag Build From Master Branch"
-        id        = "RUNNER_22"
         platform  = PowerShellStep.Platform.x86
         edition   = PowerShellStep.Edition.Desktop
         noProfile = false
