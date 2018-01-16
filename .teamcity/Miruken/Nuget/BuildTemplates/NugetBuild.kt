@@ -6,7 +6,13 @@ import jetbrains.buildServer.configs.kotlin.v2017_2.vcs.GitVcsRoot
 import jetbrains.buildServer.configs.kotlin.v2017_2.triggers.VcsTrigger
 import jetbrains.buildServer.configs.kotlin.v2017_2.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.v2017_2.*
+import jetbrains.buildServer.configs.kotlin.v2017_2.buildSteps.DotnetBuildStep
 import jetbrains.buildServer.configs.kotlin.v2017_2.triggers.finishBuildTrigger
+import jetbrains.buildServer.configs.kotlin.v2017_2.buildSteps.visualStudio
+import jetbrains.buildServer.configs.kotlin.v2017_2.buildSteps.vstest
+import jetbrains.buildServer.configs.kotlin.v2017_2.buildSteps.VisualStudioStep
+
+
 
 class NugetSolution(
         val guid:           String,
@@ -78,14 +84,52 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         }
     })
 
-    val ciBuild =  BuildType({
-        template    = "StandardNuGetBuildTemplate"
+    class DotNetBuild (init: DotNetBuild.() -> Unit = {}) : BuildType({
+
+        buildNumberPattern = "%BuildFormatSpecification%"
+
+        steps {
+            step {
+                name = "Install NuGet Packages"
+                id   = "InstallNugetStep"
+                type = "jb.nuget.installer"
+                param("toolPathSelector",          "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("nuget.path",                "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("nuget.sources",             "%PackageSources%")
+                param("nuget.updatePackages.mode", "sln")
+                param("sln.path",                  "%Solution%")
+            }
+            visualStudio {
+                name                = "Compile With Specified Configuration & Targets"
+                id                  = "CompileStep"
+                path                = "%Solution%"
+                version             = VisualStudioStep.VisualStudioVersion.vs2017
+                runPlatform         = VisualStudioStep.Platform.x86
+                msBuildVersion      = VisualStudioStep.MSBuildVersion.V15_0
+                msBuildToolsVersion = VisualStudioStep.MSBuildToolsVersion.V15_0
+                targets             = "%BuildTargets%"
+                configuration       = "%BuildConfiguration%"
+                platform            = "Any CPU"
+            }
+            vstest {
+                id                   = "TestStep"
+                vstestPath           = "%teamcity.dotnet.vstest.14.0%"
+                includeTestFileNames = "%TestAssemblies%"
+                runSettings          = "%VSTestRunSettings%"
+                testCaseFilter       = "%TestCaseFilter%"
+                coverage = dotcover {
+                    toolPath = "%teamcity.tool.JetBrains.dotCover.CommandLineTools.bundled%"
+                }
+            }
+        }
+
+    })
+
+    val ciBuild =  DotNetBuild({
         uuid        = "${solution.guid}_CIBuild"
         id          = solution.ciBuildId
         name        = "CI Build"
         description = "Watches git repo & creates a build for any change to any branch. Runs tests. Does NOT package/deploy NuGet packages!"
-
-        buildNumberPattern = "%BuildFormatSpecification%"
 
         params {
             param("BranchSpecification", "+:refs/heads/(*)")
@@ -110,27 +154,15 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
                 enableQueueOptimization = false
             }
         }
-
-        features {
-            feature {
-                id = "symbol-indexer"
-                type = "symbol-indexer"
-                enabled = false
-            }
-        }
-
-        disableSettings("RUNNER_21", "RUNNER_22", "RUNNER_4", "RUNNER_5", "RUNNER_6", "RUNNER_8")
     })
 
-    val preReleaseBuild =  BuildType({
-        template    = "StandardNuGetBuildTemplate"
+    val preReleaseBuild =  DotNetBuild({
         uuid        = "${solution.guid}_PreReleaseBuild"
         id          = solution.preReleaseBuildId
         name        = "PreRelease Build"
         description = "This will push a NuGet package with a -PreRelease tag for testing from the develop branch. NO CI.   (Note: Non-prerelease nuget packages come from the master branch)"
 
         artifactRules = "%ArtifactsIn%"
-        buildNumberPattern = "%BuildFormatSpecification%"
 
         params {
             param("BranchSpecification", """
@@ -163,8 +195,9 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         name        = "Release Build"
         description = "This will push a NuGet package from the MASTER branch. NO CI."
 
-        artifactRules = "%ArtifactsIn%"
         buildNumberPattern = "%BuildFormatSpecification%"
+
+        artifactRules = "%ArtifactsIn%"
 
         params {
             param("BranchSpecification", "+:refs/heads/(master)")
@@ -177,6 +210,13 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
             root(releaseVcsRoot)
             cleanCheckout = true
             checkoutMode = CheckoutMode.ON_AGENT
+        }
+
+        features {
+            feature {
+                id = "${solution.id}_symbol-indexer"
+                type = "symbol-indexer"
+            }
         }
 
         disableSettings("RUNNER_4", "RUNNER_5", "RUNNER_6", "RUNNER_8")
