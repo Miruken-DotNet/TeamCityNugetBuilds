@@ -6,9 +6,7 @@ import jetbrains.buildServer.configs.kotlin.v2017_2.vcs.GitVcsRoot
 import jetbrains.buildServer.configs.kotlin.v2017_2.triggers.VcsTrigger
 import jetbrains.buildServer.configs.kotlin.v2017_2.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.v2017_2.*
-import jetbrains.buildServer.configs.kotlin.v2017_2.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.v2017_2.triggers.finishBuildTrigger
-import jetbrains.buildServer.configs.kotlin.v2017_2.ui.insert
 
 class NugetSolution(
         val guid:           String,
@@ -19,9 +17,9 @@ class NugetSolution(
         val testAssemblies: String,
         val codeGithubUrl:  String,
         val nugetApiKey:    String,
-        val majorVersion:   String,
-        val minorVersion:   String,
-        val patchVersion:   String,
+        val majorVersion:          String,
+        val minorVersion:          String,
+        val patchVersion:          String,
         val nugetProjects:  List<NugetProject>){
 
     val ciVcsRootId: String
@@ -29,6 +27,9 @@ class NugetSolution(
 
     val releaseVcsRootId: String
         get() = "${id}_ReleaseVCSRoot"
+
+    val teamCityVcsRootId: String
+        get() = "${id}_TeamCityVCSRoot"
 
     val ciBuildId: String
         get() = "${id}_CIBuild"
@@ -77,106 +78,8 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         }
     })
 
-    val stepRestoreNuGets = BuildStep({
-        name = "Install NuGet Packages"
-        type = "jb.nuget.installer"
-        param("toolPathSelector",          "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
-        param("nuget.path",                "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
-        param("nuget.sources",             "%PackageSources%")
-        param("nuget.updatePackages.mode", "sln")
-        param("sln.path",                  "%Solution%")
-    })
-
-    val stepCompile = VisualStudioStep({
-        name                 = "Compile"
-        path                 = "%Solution%"
-        version              = VisualStudioStep.VisualStudioVersion.vs2017
-        runPlatform          = VisualStudioStep.Platform.x86
-        msBuildVersion       = VisualStudioStep.MSBuildVersion.V15_0
-        msBuildToolsVersion  = VisualStudioStep.MSBuildToolsVersion.V15_0
-        targets              = "%BuildTargets%"
-        configuration        = "%BuildConfiguration%"
-        platform             = "Any CPU"
-    })
-
-    val stepTest = VSTestStep ({
-        vstestPath           = "%teamcity.dotnet.vstest.14.0%"
-        includeTestFileNames = "%TestAssemblies%"
-        runSettings          = "%VSTestRunSettings%"
-        testCaseFilter       = "%TestCaseFilter%"
-        coverage             = dotcover {
-            toolPath = "%teamcity.tool.JetBrains.dotCover.CommandLineTools.bundled%"
-        }
-    })
-
-
-    val stepIncrementVerison = PowerShellStep({
-        name      = "Increment PatchVersion And Reset Build Counters"
-        platform  = PowerShellStep.Platform.x86
-        edition   = PowerShellStep.Edition.Desktop
-        noProfile = false
-        scriptMode = script {
-            content = """
-                    ${'$'}baseUri           = "localhost"
-                    ${'$'}projectId         = "%SolutionProjectId%"
-                    ${'$'}preReleaseBuildId = "%PreReleaseProjectId%"
-                    ${'$'}releaseBuildId    = "%ReleaseProjectId%"
-                    ${'$'}branch            = "%teamcity.build.branch%"
-                    ${'$'}username          = "%teamcityApiUserName%"
-                    ${'$'}password          = "%teamcityApiPassword%"
-                    ${'$'}base64AuthInfo    = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f ${'$'}username,${'$'}password)))
-
-                    Write-Host "temp ${'$'}username ${'$'}password"
-
-                    if(${'$'}branch -ne "master") {return 0};
-
-                    function Increment-ProjectPatchVersion (${'$'}projectId) {
-                        #get PatchVersion
-                        ${'$'}paramUri    ="${'$'}baseUri/httpAuth/app/rest/projects/id:${'$'}projectId/parameters/PatchVersion"
-                        Write-Host ${'$'}paramUri
-                        ${'$'}paramResult = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f ${'$'}base64AuthInfo)} -Method Get -Uri ${'$'}paramUri
-
-                        #increment PatchVersion
-                        ${'$'}newPatchVersion = ([int]${'$'}paramResult.property.value) + 1
-                        ${'$'}updateResult    = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f ${'$'}base64AuthInfo);"Content-Type"="text/plain"} -Method Put -Uri ${'$'}paramUri -Body ${'$'}newPatchVersion
-                        Write-Host "Project ${'$'}projectId PatchVersion parameter incremented to ${'$'}newPatchVersion"
-                    }
-
-                    function Reset-BuildCounter(${'$'}buildId) {
-                        ${'$'}buildCounterUri = "${'$'}baseUri/httpAuth/app/rest/buildTypes/id:${'$'}buildId/settings/buildNumberCounter"
-                        Write-Host ${'$'}buildCounterUri
-                        ${'$'}updateResult    = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f ${'$'}base64AuthInfo);"Content-Type"="text/plain"} -Method Put -Uri ${'$'}buildCounterUri -Body 0
-                        Write-Host "Reset build counter for ${'$'}(${'$'}_.name)"
-                    }
-
-                    Increment-ProjectPatchVersion ${'$'}projectId
-                    Reset-BuildCounter            ${'$'}preReleaseBuildId
-                    Reset-BuildCounter            ${'$'}releaseBuildId
-                """.trimIndent()
-        }
-    })
-
-    val stepTagBuild = PowerShellStep( {
-        name      = "Tag Build From Master Branch"
-        platform  = PowerShellStep.Platform.x86
-        edition   = PowerShellStep.Edition.Desktop
-        noProfile = false
-        scriptMode = script {
-            content = """
-                    ${'$'}branch = "%teamcity.build.branch%"
-
-                    if(${'$'}branch -ne "master") { return 0 }
-
-                    ${'$'}tag = "%SemanticVersion%"
-                    Write-Host "Taging build ${'$'}tag"
-
-                    git tag ${'$'}tag
-                    git push origin ${'$'}tag
-                """.trimIndent()
-        }
-    })
-
     val ciBuild =  BuildType({
+        template    = "StandardNuGetBuildTemplate"
         uuid        = "${solution.guid}_CIBuild"
         id          = solution.ciBuildId
         name        = "CI Build"
@@ -184,19 +87,13 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
         buildNumberPattern = "%BuildFormatSpecification%"
 
-        steps {
-            stepRestoreNuGets.create()
-            stepCompile.create()
-            stepTest.create()
-        }
-
         params {
             param("BranchSpecification", "+:refs/heads/(*)")
-            param("MajorVersion",        "0")
-            param("MinorVersion",        "0")
-            param("PatchVersion",        "0")
-            param("PdbFilesForSymbols",  "")
-            param("PrereleaseVersion",   "-CI.%build.counter%")
+            param("MajorVersion", "0")
+            param("MinorVersion", "0")
+            param("PatchVersion", "0")
+            param("PdbFilesForSymbols", "")
+            param("PrereleaseVersion", "-CI.%build.counter%")
         }
 
         vcs {
@@ -206,11 +103,11 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
         triggers {
             vcs {
-                id                       = "${solution.id}_ci_vcsTrigger"
-                quietPeriodMode          = VcsTrigger.QuietPeriodMode.USE_DEFAULT
-                perCheckinTriggering     = true
+                id = "${solution.id}_ci_vcsTrigger"
+                quietPeriodMode = VcsTrigger.QuietPeriodMode.USE_DEFAULT
+                perCheckinTriggering = true
                 groupCheckinsByCommitter = true
-                enableQueueOptimization  = false
+                enableQueueOptimization = false
             }
         }
 
@@ -221,9 +118,12 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
                 enabled = false
             }
         }
+
+        disableSettings("RUNNER_21", "RUNNER_22", "RUNNER_4", "RUNNER_5", "RUNNER_6", "RUNNER_8")
     })
 
     val preReleaseBuild =  BuildType({
+        template    = "StandardNuGetBuildTemplate"
         uuid        = "${solution.guid}_PreReleaseBuild"
         id          = solution.preReleaseBuildId
         name        = "PreRelease Build"
@@ -231,12 +131,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
         artifactRules = "%ArtifactsIn%"
         buildNumberPattern = "%BuildFormatSpecification%"
-
-        steps {
-            stepRestoreNuGets.create()
-            stepCompile.create()
-            stepTest.create()
-        }
 
         params {
             param("BranchSpecification", """
@@ -257,10 +151,13 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
                 type = "symbol-indexer"
             }
         }
+
+        disableSettings("RUNNER_21", "RUNNER_22", "RUNNER_4", "RUNNER_5", "RUNNER_6", "RUNNER_8")
     })
 
 
     val releaseBuild = BuildType({
+        template    = "StandardNuGetBuildTemplate"
         uuid        = "${solution.guid}_ReleaseBuild"
         id          = solution.releaseBuildId
         name        = "Release Build"
@@ -268,14 +165,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
         artifactRules = "%ArtifactsIn%"
         buildNumberPattern = "%BuildFormatSpecification%"
-
-        steps {
-            stepRestoreNuGets.create()
-            stepCompile.create()
-            stepTest.create()
-            stepIncrementVerison.create()
-            stepTagBuild.create()
-        }
 
         params {
             param("BranchSpecification", "+:refs/heads/(master)")
@@ -289,6 +178,8 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
             cleanCheckout = true
             checkoutMode = CheckoutMode.ON_AGENT
         }
+
+        disableSettings("RUNNER_4", "RUNNER_5", "RUNNER_6", "RUNNER_8")
     })
 
     val deploymentProject = Project({
