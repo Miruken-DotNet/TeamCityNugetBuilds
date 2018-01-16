@@ -85,7 +85,10 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
     })
 
     class DotNetBuild (init: DotNetBuild.() -> Unit = {}) : BuildType({
-
+        uuid        = "Default uui"
+        id          = "Default id"
+        name        = "Default name"
+        
         buildNumberPattern = "%BuildFormatSpecification%"
 
         steps {
