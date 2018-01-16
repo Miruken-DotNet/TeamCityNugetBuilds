@@ -252,7 +252,6 @@ fun configureNugetDeployProject (
     val baseId   = "${solution.id}_${project.id}"
 
     val deployPreRelease =  BuildType({
-        template           = "StandardNuGetBuildTemplate"
         uuid               = "${baseUuid}_DeployPreRelease"
         id                 = "${baseId}_DeployPreRelease"
         name               = "Deploy PreRelease"
@@ -261,7 +260,23 @@ fun configureNugetDeployProject (
 
         params {
             param("BuildFormatSpecification", "%dep.${solution.preReleaseBuildId}.BuildFormatSpecification%")
-            param("PackageVersion", "%dep.${solution.preReleaseBuildId}.PackageVersion%")
+            param("PackageVersion",           "%dep.${solution.preReleaseBuildId}.PackageVersion%")
+        }
+
+        steps {
+            step {
+                name = "Public Prerelease Nuget on TC Feed"
+                id = "${baseId}_PrereleaseNugetStep"
+                type = "jb.nuget.pack"
+                param("toolPathSelector",            "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("nuget.pack.output.clean",     "true")
+                param("nuget.pack.specFile",         "%NuGetPackSpecFiles%")
+                param("nuget.pack.output.directory", "nupkg")
+                param("nuget.path",                  "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("nuget.pack.as.artifact",      "true")
+                param("nuget.pack.prefer.project",   "true")
+                param("nuget.pack.version",          "%PackageVersion%")
+            }
         }
 
         triggers {
@@ -284,8 +299,6 @@ fun configureNugetDeployProject (
                 }
             }
         }
-
-        disableSettings("JetBrains.AssemblyInfo", "RUNNER_1", "RUNNER_2", "RUNNER_21", "RUNNER_22", "RUNNER_3", "RUNNER_5", "RUNNER_6", "RUNNER_8")
     })
 
     val deployRelease = BuildType({
