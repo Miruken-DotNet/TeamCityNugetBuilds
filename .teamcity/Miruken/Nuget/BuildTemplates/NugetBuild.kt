@@ -18,9 +18,9 @@ class NugetSolution(
         val testAssemblies: String,
         val codeGithubUrl:  String,
         val nugetApiKey:    String,
-        val majorVersion:          String,
-        val minorVersion:          String,
-        val patchVersion:          String,
+        val majorVersion:   String,
+        val minorVersion:   String,
+        val patchVersion:   String,
         val nugetProjects:  List<NugetProject>){
 
     val ciVcsRootId: String
@@ -28,9 +28,6 @@ class NugetSolution(
 
     val releaseVcsRootId: String
         get() = "${id}_ReleaseVCSRoot"
-
-    val teamCityVcsRootId: String
-        get() = "${id}_TeamCityVCSRoot"
 
     val ciBuildId: String
         get() = "${id}_CIBuild"
@@ -79,18 +76,18 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         }
     })
 
-    val stepRestoreNuGets = BuildStep {
+    class stepRestoreNuGets : BuildStep({
         name = "Install NuGet Packages"
-        id = "RUNNER_1"
+        id   = "RUNNER_1"
         type = "jb.nuget.installer"
         param("toolPathSelector",          "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
         param("nuget.path",                "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
         param("nuget.sources",             "%PackageSources%")
         param("nuget.updatePackages.mode", "sln")
         param("sln.path",                  "%Solution%")
-    }
+    })
 
-    val stepCompile = VisualStudioStep {
+    class stepCompile : VisualStudioStep({
         name                 = "Compile"
         id                   = "RUNNER_2"
         path                 = "%Solution%"
@@ -101,9 +98,9 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         targets              = "%BuildTargets%"
         configuration        = "%BuildConfiguration%"
         platform             = "Any CPU"
-    }
+    })
 
-    val stepTest = VSTestStep {
+    class stepTest : VSTestStep ({
         id                   = "RUNNER_3"
         vstestPath           = "%teamcity.dotnet.vstest.14.0%"
         includeTestFileNames = "%TestAssemblies%"
@@ -112,9 +109,10 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         coverage             = dotcover {
             toolPath = "%teamcity.tool.JetBrains.dotCover.CommandLineTools.bundled%"
         }
-    }
+    })
 
-    val stepIncrementVerison = PowerShellStep {
+
+    class stepIncrementVerison : PowerShellStep({
         name      = "Increment PatchVersion And Reset Build Counters"
         id        = "RUNNER_21"
         platform  = PowerShellStep.Platform.x86
@@ -159,9 +157,9 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
                     Reset-BuildCounter            ${'$'}releaseBuildId
                 """.trimIndent()
         }
-    }
+    })
 
-    val stepTagBuild = PowerShellStep {
+    class stepTagBuild : PowerShellStep( {
         name      = "Tag Build From Master Branch"
         id        = "RUNNER_22"
         platform  = PowerShellStep.Platform.x86
@@ -180,7 +178,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
                     git push origin ${'$'}tag
                 """.trimIndent()
         }
-    }
+    })
 
     val ciBuild =  BuildType({
         uuid        = "${solution.guid}_CIBuild"
@@ -191,9 +189,9 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         buildNumberPattern = "%BuildFormatSpecification%"
 
         steps {
-            stepRestoreNuGets
-            stepCompile
-            stepTest
+            stepRestoreNuGets()
+            stepCompile()
+            stepTest()
         }
 
         params {
@@ -239,9 +237,9 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         buildNumberPattern = "%BuildFormatSpecification%"
 
         steps {
-            stepRestoreNuGets
-            stepCompile
-            stepTest
+            stepRestoreNuGets()
+            stepCompile()
+            stepTest()
         }
 
         params {
@@ -276,11 +274,11 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         buildNumberPattern = "%BuildFormatSpecification%"
 
         steps {
-            stepRestoreNuGets
-            stepCompile
-            stepTest
-            stepIncrementVerison
-            stepTagBuild
+            stepRestoreNuGets()
+            stepCompile()
+            stepTest()
+            stepIncrementVerison()
+            stepTagBuild()
         }
 
         params {
