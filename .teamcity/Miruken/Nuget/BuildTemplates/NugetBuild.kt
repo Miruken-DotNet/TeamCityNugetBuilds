@@ -7,6 +7,9 @@ import jetbrains.buildServer.configs.kotlin.v2017_2.triggers.VcsTrigger
 import jetbrains.buildServer.configs.kotlin.v2017_2.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.v2017_2.*
 import jetbrains.buildServer.configs.kotlin.v2017_2.triggers.finishBuildTrigger
+import jetbrains.buildServer.configs.kotlin.v2017_2.buildSteps.VisualStudioStep
+import jetbrains.buildServer.configs.kotlin.v2017_2.buildSteps.visualStudio
+import jetbrains.buildServer.configs.kotlin.v2017_2.buildSteps.vstest
 
 class NugetSolution(
         val guid:           String,
@@ -78,14 +81,77 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         }
     })
 
-    val ciBuild =  BuildType({
-        template    = "StandardNuGetBuildTemplate"
+    fun restoreNuget(buildType: BuildType) : BuildType{
+        buildType.steps {
+            step {
+                name = "Restore NuGet Packages"
+                id   = "${buildType.id}_RestoreNugetStep"
+                type = "jb.nuget.installer"
+                param("toolPathSelector",          "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("nuget.path",                "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("nuget.sources",             "%PackageSources%")
+                param("nuget.updatePackages.mode", "sln")
+                param("sln.path",                  "%Solution%")
+            }
+        }
+        return buildType
+    }
+    fun compile(buildType: BuildType) : BuildType{
+        buildType.steps {
+            visualStudio {
+                name                = "CompileStep"
+                id                  = "${buildType.id}_Build"
+                path                = "%Solution%"
+                version             = VisualStudioStep.VisualStudioVersion.vs2017
+                runPlatform         = VisualStudioStep.Platform.x86
+                msBuildVersion      = VisualStudioStep.MSBuildVersion.V15_0
+                msBuildToolsVersion = VisualStudioStep.MSBuildToolsVersion.V15_0
+                targets             = "%BuildTargets%"
+                configuration       = "%BuildConfiguration%"
+                platform            = "Any CPU"
+            }
+        }
+        return buildType
+    }
+    fun test(buildType: BuildType) : BuildType{
+        buildType.steps {
+            vstest {
+                id                   = "${buildType.id}_TestStep"
+                vstestPath           = "%teamcity.dotnet.vstest.14.0%"
+                includeTestFileNames = "%TestAssemblies%"
+                runSettings          = "%VSTestRunSettings%"
+                testCaseFilter       = "%TestCaseFilter%"
+                coverage = dotcover {
+                    toolPath = "%teamcity.tool.JetBrains.dotCover.CommandLineTools.bundled%"
+                }
+            }
+        }
+        return buildType
+    }
+
+    fun versionBuild(buildType: BuildType) : BuildType{
+
+        return buildType
+    }
+
+    fun tagBuild(buildType: BuildType) : BuildType{
+
+        return buildType
+    }
+
+    fun dotNetBuild(buildType: BuildType) : BuildType{
+        test(compile(restoreNuget(buildType)))
+
+        buildType.buildNumberPattern = "%BuildFormatSpecification%"
+
+        return buildType
+    }
+
+    val ciBuild =  dotNetBuild(BuildType({
         uuid        = "${solution.guid}_CIBuild"
         id          = solution.ciBuildId
         name        = "CI Build"
         description = "Watches git repo & creates a build for any change to any branch. Runs tests. Does NOT package/deploy NuGet packages!"
-
-        buildNumberPattern = "%BuildFormatSpecification%"
 
         params {
             param("BranchSpecification", "+:refs/heads/(*)")
@@ -118,19 +184,15 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
                 enabled = false
             }
         }
+    }))
 
-        disableSettings("RUNNER_21", "RUNNER_22", "RUNNER_4", "RUNNER_5", "RUNNER_6", "RUNNER_8")
-    })
-
-    val preReleaseBuild =  BuildType({
-        template    = "StandardNuGetBuildTemplate"
+    val preReleaseBuild =  dotNetBuild(BuildType({
         uuid        = "${solution.guid}_PreReleaseBuild"
         id          = solution.preReleaseBuildId
         name        = "PreRelease Build"
         description = "This will push a NuGet package with a -PreRelease tag for testing from the develop branch. NO CI.   (Note: Non-prerelease nuget packages come from the master branch)"
 
         artifactRules = "%ArtifactsIn%"
-        buildNumberPattern = "%BuildFormatSpecification%"
 
         params {
             param("BranchSpecification", """
@@ -151,20 +213,15 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
                 type = "symbol-indexer"
             }
         }
-
-        disableSettings("RUNNER_21", "RUNNER_22", "RUNNER_4", "RUNNER_5", "RUNNER_6", "RUNNER_8")
-    })
+    }))
 
 
-    val releaseBuild = BuildType({
-        template    = "StandardNuGetBuildTemplate"
-        uuid        = "${solution.guid}_ReleaseBuild"
-        id          = solution.releaseBuildId
-        name        = "Release Build"
-        description = "This will push a NuGet package from the MASTER branch. NO CI."
-
+    val releaseBuild = versionBuild(tagBuild(dotNetBuild(BuildType({
+        uuid          = "${solution.guid}_ReleaseBuild"
+        id            = solution.releaseBuildId
+        name          = "Release Build"
+        description   = "This will push a NuGet package from the MASTER branch. NO CI."
         artifactRules = "%ArtifactsIn%"
-        buildNumberPattern = "%BuildFormatSpecification%"
 
         params {
             param("BranchSpecification", "+:refs/heads/(master)")
@@ -178,9 +235,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
             cleanCheckout = true
             checkoutMode = CheckoutMode.ON_AGENT
         }
-
-        disableSettings("RUNNER_4", "RUNNER_5", "RUNNER_6", "RUNNER_8")
-    })
+    }))))
 
     val deploymentProject = Project({
         uuid     = "${solution.guid}_DeploymentProject"
