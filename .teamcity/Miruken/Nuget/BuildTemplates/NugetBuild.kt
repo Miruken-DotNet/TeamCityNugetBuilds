@@ -8,6 +8,7 @@ import jetbrains.buildServer.configs.kotlin.v2017_2.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.v2017_2.*
 import jetbrains.buildServer.configs.kotlin.v2017_2.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.v2017_2.triggers.finishBuildTrigger
+import jetbrains.buildServer.configs.kotlin.v2017_2.ui.insert
 
 class NugetSolution(
         val guid:           String,
@@ -76,7 +77,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         }
     })
 
-    class stepRestoreNuGets : BuildStep({
+    val stepRestoreNuGets = BuildStep({
         name = "Install NuGet Packages"
         type = "jb.nuget.installer"
         param("toolPathSelector",          "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
@@ -86,7 +87,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         param("sln.path",                  "%Solution%")
     })
 
-    class stepCompile : VisualStudioStep({
+    val stepCompile = VisualStudioStep({
         name                 = "Compile"
         path                 = "%Solution%"
         version              = VisualStudioStep.VisualStudioVersion.vs2017
@@ -98,7 +99,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         platform             = "Any CPU"
     })
 
-    class stepTest : VSTestStep ({
+    val stepTest = VSTestStep ({
         vstestPath           = "%teamcity.dotnet.vstest.14.0%"
         includeTestFileNames = "%TestAssemblies%"
         runSettings          = "%VSTestRunSettings%"
@@ -109,7 +110,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
     })
 
 
-    class stepIncrementVerison : PowerShellStep({
+    val stepIncrementVerison = PowerShellStep({
         name      = "Increment PatchVersion And Reset Build Counters"
         platform  = PowerShellStep.Platform.x86
         edition   = PowerShellStep.Edition.Desktop
@@ -155,7 +156,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         }
     })
 
-    class stepTagBuild : PowerShellStep( {
+    val stepTagBuild = PowerShellStep( {
         name      = "Tag Build From Master Branch"
         platform  = PowerShellStep.Platform.x86
         edition   = PowerShellStep.Edition.Desktop
@@ -184,9 +185,9 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         buildNumberPattern = "%BuildFormatSpecification%"
 
         steps {
-            stepRestoreNuGets()
-            stepCompile()
-            stepTest()
+            stepRestoreNuGets.create()
+            stepCompile.create()
+            stepTest.create()
         }
 
         params {
@@ -232,9 +233,9 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         buildNumberPattern = "%BuildFormatSpecification%"
 
         steps {
-            stepRestoreNuGets()
-            stepCompile()
-            stepTest()
+            stepRestoreNuGets.create()
+            stepCompile.create()
+            stepTest.create()
         }
 
         params {
@@ -269,11 +270,11 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         buildNumberPattern = "%BuildFormatSpecification%"
 
         steps {
-            stepRestoreNuGets()
-            stepCompile()
-            stepTest()
-            stepIncrementVerison()
-            stepTagBuild()
+            stepRestoreNuGets.create()
+            stepCompile.create()
+            stepTest.create()
+            stepIncrementVerison.create()
+            stepTagBuild.create()
         }
 
         params {
