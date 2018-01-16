@@ -265,7 +265,7 @@ fun configureNugetDeployProject (
 
         steps {
             step {
-                name = "Public Prerelease Nuget on TC Feed"
+                name = "Prerelease Nuget on TC Feed"
                 id = "${baseId}_PrereleaseNugetStep"
                 type = "jb.nuget.pack"
                 param("toolPathSelector",            "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
@@ -302,7 +302,6 @@ fun configureNugetDeployProject (
     })
 
     val deployRelease = BuildType({
-        template     = "StandardNuGetBuildTemplate"
         uuid         = "${baseUuid}_DeployRelease"
         id           = "${baseId}_DeployRelease"
         name         = "Deploy Release"
@@ -312,8 +311,34 @@ fun configureNugetDeployProject (
 
         params {
             param("BuildFormatSpecification", "%dep.${solution.releaseBuildId}.BuildFormatSpecification%")
-            param("PackageVersion", "%dep.${solution.releaseBuildId}.PackageVersion%")
-            param("PrereleaseVersion", "")
+            param("PackageVersion",           "%dep.${solution.releaseBuildId}.PackageVersion%")
+            param("PrereleaseVersion",        "")
+        }
+
+        steps {
+            step {
+                name = "NuGet Pack for NuGet.org"
+                id   = "${baseId}_ReleasePackStep"
+                type = "jb.nuget.pack"
+                param("toolPathSelector",            "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("nuget.pack.output.clean",     "true")
+                param("nuget.pack.specFile",         "%NuGetPackSpecFiles%")
+                param("nuget.pack.include.sources",  "true")
+                param("nuget.pack.output.directory", "nupkg")
+                param("nuget.path",                  "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("nuget.pack.prefer.project",   "true")
+                param("nuget.pack.version",          "%PackageVersion%")
+            }
+            step {
+                name = "Nuget Publish to NuGet.org"
+                id   = "${baseId}_ReleasePublishStep"
+                type = "jb.nuget.publish"
+                param("toolPathSelector",     "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("secure:nuget.api.key", "zxx2e3163a9797ccbf3894c3a62d6d95c15")
+                param("nuget.path",           "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("nuget.publish.source", "nuget.org")
+                param("nuget.publish.files",  "nupkg/%NupkgName%")
+            }
         }
 
         triggers {
@@ -335,8 +360,6 @@ fun configureNugetDeployProject (
                 }
             }
         }
-
-        disableSettings("JetBrains.AssemblyInfo", "RUNNER_1", "RUNNER_2", "RUNNER_21", "RUNNER_22", "RUNNER_3", "RUNNER_4", "RUNNER_5")
     })
 
     return Project({
