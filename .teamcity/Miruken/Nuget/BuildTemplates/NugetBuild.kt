@@ -119,7 +119,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
                 id                   = "${buildType.id}_TestStep"
                 vstestPath           = "%teamcity.dotnet.vstest.14.0%"
                 includeTestFileNames = "%TestAssemblies%"
-                runSettings          = "%VSTestRunSettings%"
+                runSettings          = ""
                 testCaseFilter       = "%TestCaseFilter%"
                 coverage = dotcover {
                     toolPath = "%teamcity.tool.JetBrains.dotCover.CommandLineTools.bundled%"
