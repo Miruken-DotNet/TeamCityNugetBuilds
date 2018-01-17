@@ -23,9 +23,9 @@ class NugetSolution(
         val testAssemblies: String,
         val codeGithubUrl:  String,
         val nugetApiKey:    String,
-        val majorVersion:          String,
-        val minorVersion:          String,
-        val patchVersion:          String,
+        val majorVersion:   String,
+        val minorVersion:   String,
+        val patchVersion:   String,
         val nugetProjects:  List<NugetProject>){
 
     val ciVcsRootId: String
@@ -33,9 +33,6 @@ class NugetSolution(
 
     val releaseVcsRootId: String
         get() = "${id}_ReleaseVCSRoot"
-
-    val teamCityVcsRootId: String
-        get() = "${id}_TeamCityVCSRoot"
 
     val ciBuildId: String
         get() = "${id}_CIBuild"
@@ -185,7 +182,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
     }
 
     fun tagBuild(buildType: BuildType) : BuildType{
-
         buildType.steps {
             powerShell {
                 name       = "Tag Build From Master Branch"
@@ -228,11 +224,11 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
         params {
             param("BranchSpecification", "+:refs/heads/(*)")
-            param("MajorVersion", "0")
-            param("MinorVersion", "0")
-            param("PatchVersion", "0")
-            param("PdbFilesForSymbols", "")
-            param("PrereleaseVersion", "-CI.%build.counter%")
+            param("MajorVersion",        "0")
+            param("MinorVersion",        "0")
+            param("PatchVersion",        "0")
+            param("PdbFilesForSymbols",  "")
+            param("PrereleaseVersion",   "-CI.%build.counter%")
         }
 
         vcs {
@@ -242,29 +238,28 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
         triggers {
             vcs {
-                id = "${solution.id}_ci_vcsTrigger"
-                quietPeriodMode = VcsTrigger.QuietPeriodMode.USE_DEFAULT
-                perCheckinTriggering = true
+                id                       = "${solution.id}_ci_vcsTrigger"
+                quietPeriodMode          = VcsTrigger.QuietPeriodMode.USE_DEFAULT
+                perCheckinTriggering     = true
                 groupCheckinsByCommitter = true
-                enableQueueOptimization = false
+                enableQueueOptimization  = false
             }
         }
 
         features {
             feature {
-                id = "symbol-indexer"
-                type = "symbol-indexer"
+                id      = "symbol-indexer"
+                type    = "symbol-indexer"
                 enabled = false
             }
         }
     }))
 
     val preReleaseBuild =  dotNetBuild(BuildType({
-        uuid        = "${solution.guid}_PreReleaseBuild"
-        id          = solution.preReleaseBuildId
-        name        = "PreRelease Build"
-        description = "This will push a NuGet package with a -PreRelease tag for testing from the develop branch. NO CI.   (Note: Non-prerelease nuget packages come from the master branch)"
-
+        uuid          = "${solution.guid}_PreReleaseBuild"
+        id            = solution.preReleaseBuildId
+        name          = "PreRelease Build"
+        description   = "This will push a NuGet package with a -PreRelease tag for testing from the develop branch. NO CI.   (Note: Non-prerelease nuget packages come from the master branch)"
         artifactRules = "%ArtifactsIn%"
 
         params {
@@ -282,7 +277,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
         features {
             feature {
-                id = "${solution.id}_symbol-indexer"
+                id   = "${solution.id}_symbol-indexer"
                 type = "symbol-indexer"
             }
         }
@@ -297,10 +292,10 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         artifactRules = "%ArtifactsIn%"
 
         params {
-            param("BranchSpecification", "+:refs/heads/(master)")
-            param("DefaultBranch", "master")
+            param("BranchSpecification",              "+:refs/heads/(master)")
+            param("DefaultBranch",                    "master")
             param("NuGetPackPrereleaseVersionString", "")
-            param("PrereleaseVersion", "")
+            param("PrereleaseVersion",                "")
         }
 
         vcs {
@@ -308,13 +303,20 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
             cleanCheckout = true
             checkoutMode = CheckoutMode.ON_AGENT
         }
+
+        features {
+            feature {
+                id   = "${solution.id}_symbol-indexer"
+                type = "symbol-indexer"
+            }
+        }
     }))))
 
     val deploymentProject = Project({
         uuid     = "${solution.guid}_DeploymentProject"
         id       = solution.deploymentProjectId
         parentId = solution.id
-        name = "Deployment"
+        name     = "Deployment"
 
         params {
             param("SHA", "")
@@ -324,8 +326,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         for(nugetProject in solution.nugetProjects){
             subProject(configureNugetDeployProject(solution, nugetProject, preReleaseBuild, releaseBuild))
         }
-
-        subProjectsOrder = arrayListOf("NuGet_MirukenDotNet_MirukenSolutionKotlin_Deployment_Miruken", "NuGet_MirukenDotNet_MirukenSolutionKotlin_Deployment_MirukenCastle", "NuGet_MirukenDotNet_MirukenSolutionKotlin_Deployment_MirukenValidate", "NuGet_MirukenDotNet_MirukenSolutionKotlin_Deployment_MirukenValidateCastle")
     })
 
     return Project({
@@ -363,9 +363,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
             param("TestAssemblies",      solution.testAssemblies)
         }
 
-        buildTypesOrder = arrayListOf(ciBuild, preReleaseBuild, releaseBuild)
-        subProjectsOrder = arrayListOf(deploymentProject.id)
-
         subProject(deploymentProject)
     })
 }
@@ -379,22 +376,12 @@ fun configureNugetDeployProject (
     val baseUuid = "${solution.guid}_${project.id}"
     val baseId   = "${solution.id}_${project.id}"
 
-    val deployPreRelease =  BuildType({
-        uuid               = "${baseUuid}_DeployPreRelease"
-        id                 = "${baseId}_DeployPreRelease"
-        name               = "Deploy PreRelease"
-        description        = "This will push a NuGet package with a -PreRelease tag for testing from the develop branch. NO CI.   (Note: Non-prerelease nuget packages come from the master branch)"
-        buildNumberPattern = "%BuildFormatSpecification%"
+    fun deployPreReleaseNuget(buildType: BuildType) : BuildType{
 
-        params {
-            param("BuildFormatSpecification", "%dep.${solution.preReleaseBuildId}.BuildFormatSpecification%")
-            param("PackageVersion",           "%dep.${solution.preReleaseBuildId}.PackageVersion%")
-        }
-
-        steps {
+        buildType.steps {
             step {
                 name = "Prerelease Nuget on TC Feed"
-                id = "${baseId}_PrereleaseNugetStep"
+                id = "${buildType.id}_PrereleaseNugetStep"
                 type = "jb.nuget.pack"
                 param("toolPathSelector",            "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
                 param("nuget.pack.output.clean",     "true")
@@ -405,6 +392,52 @@ fun configureNugetDeployProject (
                 param("nuget.pack.prefer.project",   "true")
                 param("nuget.pack.version",          "%PackageVersion%")
             }
+        }
+
+        return buildType
+    }
+
+    fun deployReleaseNuget(buildType: BuildType) : BuildType{
+
+        buildType.steps {
+            step {
+                name = "NuGet Pack for NuGet.org"
+                id   = "${buildType.id}_ReleasePackStep"
+                type = "jb.nuget.pack"
+                param("toolPathSelector",            "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("nuget.pack.output.clean",     "true")
+                param("nuget.pack.specFile",         "%NuGetPackSpecFiles%")
+                param("nuget.pack.include.sources",  "true")
+                param("nuget.pack.output.directory", "nupkg")
+                param("nuget.path",                  "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("nuget.pack.prefer.project",   "true")
+                param("nuget.pack.version",          "%PackageVersion%")
+            }
+            step {
+                name = "Nuget Publish to NuGet.org"
+                id   = "${buildType.id}_ReleasePublishStep"
+                type = "jb.nuget.publish"
+                param("toolPathSelector",     "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("secure:nuget.api.key", "zxx2e3163a9797ccbf3894c3a62d6d95c15")
+                param("nuget.path",           "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("nuget.publish.source", "nuget.org")
+                param("nuget.publish.files",  "nupkg/%NupkgName%")
+            }
+        }
+
+        return buildType
+    }
+
+    val deployPreRelease =  deployPreReleaseNuget(BuildType({
+        uuid               = "${baseUuid}_DeployPreRelease"
+        id                 = "${baseId}_DeployPreRelease"
+        name               = "Deploy PreRelease"
+        description        = "This will push a NuGet package with a -PreRelease tag for testing from the develop branch. NO CI.   (Note: Non-prerelease nuget packages come from the master branch)"
+        buildNumberPattern = "%BuildFormatSpecification%"
+
+        params {
+            param("BuildFormatSpecification", "%dep.${solution.preReleaseBuildId}.BuildFormatSpecification%")
+            param("PackageVersion",           "%dep.${solution.preReleaseBuildId}.PackageVersion%")
         }
 
         triggers {
@@ -422,14 +455,14 @@ fun configureNugetDeployProject (
                 }
 
                 artifacts {
-                    id = "${baseId}_PreRelease_ARTIFACT_DEPENDENCY"
+                    id            = "${baseId}_PreRelease_ARTIFACT_DEPENDENCY"
                     artifactRules = "%ArtifactsOut%"
                 }
             }
         }
-    })
+    }))
 
-    val deployRelease = BuildType({
+    val deployRelease = deployReleaseNuget(BuildType({
         uuid         = "${baseUuid}_DeployRelease"
         id           = "${baseId}_DeployRelease"
         name         = "Deploy Release"
@@ -443,37 +476,11 @@ fun configureNugetDeployProject (
             param("PrereleaseVersion",        "")
         }
 
-        steps {
-            step {
-                name = "NuGet Pack for NuGet.org"
-                id   = "${baseId}_ReleasePackStep"
-                type = "jb.nuget.pack"
-                param("toolPathSelector",            "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
-                param("nuget.pack.output.clean",     "true")
-                param("nuget.pack.specFile",         "%NuGetPackSpecFiles%")
-                param("nuget.pack.include.sources",  "true")
-                param("nuget.pack.output.directory", "nupkg")
-                param("nuget.path",                  "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
-                param("nuget.pack.prefer.project",   "true")
-                param("nuget.pack.version",          "%PackageVersion%")
-            }
-            step {
-                name = "Nuget Publish to NuGet.org"
-                id   = "${baseId}_ReleasePublishStep"
-                type = "jb.nuget.publish"
-                param("toolPathSelector",     "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
-                param("secure:nuget.api.key", "zxx2e3163a9797ccbf3894c3a62d6d95c15")
-                param("nuget.path",           "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
-                param("nuget.publish.source", "nuget.org")
-                param("nuget.publish.files",  "nupkg/%NupkgName%")
-            }
-        }
-
         triggers {
             finishBuildTrigger {
-                id = "${baseId}_Release_TRIGGER"
+                id             = "${baseId}_Release_TRIGGER"
                 buildTypeExtId = solution.releaseBuildId
-                branchFilter = "+:master"
+                branchFilter   = "+:master"
             }
         }
 
@@ -483,12 +490,12 @@ fun configureNugetDeployProject (
                 }
 
                 artifacts {
-                    id = "${baseId}_Release_ARTIFACT_DEPENDENCY"
+                    id            = "${baseId}_Release_ARTIFACT_DEPENDENCY"
                     artifactRules = "%ArtifactsOut%"
                 }
             }
         }
-    })
+    }))
 
     return Project({
         uuid        = baseUuid
@@ -502,8 +509,7 @@ fun configureNugetDeployProject (
 
         params {
             param("NuGetPackSpecFiles", project.nuspecFile)
-            param("PackageName", project.packageName)
+            param("PackageName",        project.packageName)
         }
-        buildTypesOrder = arrayListOf(deployPreRelease, deployRelease)
     })
 }
