@@ -20,7 +20,7 @@ object Project : Project({
             codeGithubUrl     = "git@github.com:improving/Improving.AspNet.git",
             nugetApiKey       = "%ImprovingNugetApiKey%",
             solutionFile      = "Improving.AspNet.sln",
-            testAssemblies    = "**\\bin\\*Test*.dll",
+            testAssemblies    = "Improving.AspNet.Test\\bin\\Improving.AspNet.dll",
             majorVersion      = "0",
             minorVersion      = "0",
             patchVersion      = "3",
