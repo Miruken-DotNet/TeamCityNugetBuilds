@@ -9,6 +9,14 @@ To apply the patch, change the buildType with uuid = '50fcdffb-6d49-43d4-a0fc-8e
 accordingly and delete the patch script.
 */
 changeBuildType("50fcdffb-6d49-43d4-a0fc-8e6dbc47a532_PreReleaseBuild") {
+    check(artifactRules == "%ArtifactsIn%") {
+        "Unexpected option value: artifactRules = $artifactRules"
+    }
+    artifactRules = """
+        %ArtifactsIn%
+        Source\Miruken\bin\Miruken.pdb
+    """.trimIndent()
+
     params {
         add {
             param("PrereleaseVersion", "-prerelease")
