@@ -20,7 +20,7 @@ object Project : Project({
             codeGithubUrl     = "git@github.com:improving/Improving.AspNet.git",
             nugetApiKey       = "%ImprovingNugetApiKey%",
             solutionFile      = "Improving.AspNet.sln",
-            testAssemblies    = "Improving.AspNet.Test\\bin\\Improving.AspNet.dll",
+            testAssemblies    = "Test\\Improving.AspNet.Test\\bin\\Improving.AspNet.dll",
             majorVersion      = "0",
             minorVersion      = "0",
             patchVersion      = "3",
@@ -28,6 +28,6 @@ object Project : Project({
                     NugetProject(
                             id          = "ImprovingAspNet",
                             packageName = "Improving.AspNet",
-                            nuspecFile  = "Improving.AspNet\\Improving.AspNet.nuspec")
+                            nuspecFile  = "Source\\Improving.AspNet\\Improving.AspNet.nuspec")
             ))))
 })
