@@ -397,7 +397,7 @@ fun configureNugetDeployProject (
         return buildType
     }
 
-    fun deployReleaseNuget(buildType: BuildType) : BuildType{
+    fun deployReleaseNuget(apiKey: String, buildType: BuildType) : BuildType{
 
         buildType.steps {
             step {
@@ -415,13 +415,22 @@ fun configureNugetDeployProject (
             }
             step {
                 name = "Nuget Publish to NuGet.org"
-                id   = "${buildType.id}_ReleasePublishStep"
+                id   = "${buildType.id}_ReleasePublishNugetStep"
                 type = "jb.nuget.publish"
+                param("secure:nuget.api.key", apiKey)
                 param("toolPathSelector",     "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
-                param("secure:nuget.api.key", "zxx2e3163a9797ccbf3894c3a62d6d95c15")
                 param("nuget.path",           "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
                 param("nuget.publish.source", "nuget.org")
                 param("nuget.publish.files",  "nupkg/%NupkgName%")
+            }
+            step {
+                name = "Nuget Publish to SymbolSource.org"
+                id   = "${buildType.id}_ReleasePublishSymbolsStep"
+                type = "jb.nuget.publish"
+                param("secure:nuget.api.key", apiKey)
+                param("nuget.path",           "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                param("nuget.publish.source", "https://nuget.smbsrc.net/")
+                param("nuget.publish.files",  "nupkg/%NupkgSymbolsName%")
             }
         }
 
@@ -462,7 +471,7 @@ fun configureNugetDeployProject (
         }
     }))
 
-    val deployRelease = deployReleaseNuget(BuildType({
+    val deployRelease = deployReleaseNuget(solution.nugetApiKey, BuildType({
         uuid         = "${baseUuid}_DeployRelease"
         id           = "${baseId}_DeployRelease"
         name         = "Deploy Release"
