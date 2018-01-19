@@ -39,7 +39,7 @@ changeBuildType("65c86971-334a-4068-b7a0-f14b15bf83a6_ImprovingAspNet_DeployRele
         }
         insert(2) {
             step {
-                name = "Nuget Publish to NuGet.org (1)"
+                name = "Nuget Publish to SymbolSource.org"
                 type = "jb.nuget.publish"
                 param("secure:nuget.api.key", "credentialsJSON:c17afa04-30a4-410b-ac55-f2d0fc02578d")
                 param("nuget.path", "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
