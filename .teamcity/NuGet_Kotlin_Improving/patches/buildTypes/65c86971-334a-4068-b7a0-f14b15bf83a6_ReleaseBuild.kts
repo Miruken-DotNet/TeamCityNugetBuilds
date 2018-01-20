@@ -15,5 +15,13 @@ changeBuildType("65c86971-334a-4068-b7a0-f14b15bf83a6_ReleaseBuild") {
                 type = "symbol-indexer"
             }
         }
+        add {
+            feature {
+                type = "JetBrains.AssemblyInfo"
+                param("file-format", "%DotNetAssemblyVersion%")
+                param("assembly-format", "%DotNetAssemblyVersion%")
+                param("info-format", "%BuildFormatSpecification%")
+            }
+        }
     }
 }
