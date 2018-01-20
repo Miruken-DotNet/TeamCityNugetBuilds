@@ -44,7 +44,6 @@ changeBuildType("65c86971-334a-4068-b7a0-f14b15bf83a6_ImprovingAspNet_DeployRele
     steps {
         update<BuildStep>(1) {
             param("secure:nuget.api.key", "credentialsJSON:f6c68349-8598-4833-90ca-a92cecf8064c")
-            param("nuget.publish.source", "https://www.nuget.org/api/v2/")
             param("toolPathSelector", "")
         }
         update<BuildStep>(2) {
