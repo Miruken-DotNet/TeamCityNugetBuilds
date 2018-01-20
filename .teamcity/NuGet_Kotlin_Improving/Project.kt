@@ -13,7 +13,7 @@ object Project : Project({
     description = "Improving Nugets"
 
     subProject(configureNugetSolutionProject(NugetSolution(
-            guid              = "65c86971-334a-4068-b7a0-f14b15bf83a6", // stopped here
+            guid              = "65c86971-334a-4068-b7a0-f14b15bf83a6",
             parentId          = "NuGet_Kotlin_Improving",
             id                = "NuGet_Kotlin_Improving_ImprovingAspNet",
             name              = "Improving.AspNet Solution",
@@ -29,5 +29,24 @@ object Project : Project({
                             id          = "ImprovingAspNet",
                             packageName = "Improving.AspNet",
                             nuspecFile  = "Source\\Improving.AspNet\\Improving.AspNet.nuspec")
+            ))))
+
+    subProject(configureNugetSolutionProject(NugetSolution(
+            guid              = "444fa27c-654b-4804-81bb-89c1babd42ce",
+            parentId          = "NuGet_Kotlin_Improving",
+            id                = "NuGet_Kotlin_Improving_ImprovingDbUp",
+            name              = "Improving.DbUp Solution",
+            codeGithubUrl     = "git@github.com:improving/Improving.DbUp.git",
+            nugetApiKey       = "%ImprovingNugetApiKey%",
+            solutionFile      = "Improving.DbUp.sln",
+            testAssemblies    = "Test\\Improving.DbUp.Tests\\bin\\Improving.DbUp.Tests.dll",
+            majorVersion      = "1",
+            minorVersion      = "0",
+            patchVersion      = "4",
+            nugetProjects = listOf(
+                    NugetProject(
+                            id          = "ImprovingDbUp",
+                            packageName = "Improving.DbUp",
+                            nuspecFile  = "Source\\Improving.DbUp\\Improving.DbUp.nuspec")
             ))))
 })
