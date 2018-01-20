@@ -1,7 +1,6 @@
 package NuGet_Kotlin_Improving.patches.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.v2017_2.*
-import jetbrains.buildServer.configs.kotlin.v2017_2.BuildFeature
 import jetbrains.buildServer.configs.kotlin.v2017_2.ui.*
 
 /*
@@ -11,13 +10,10 @@ accordingly and delete the patch script.
 */
 changeBuildType("65c86971-334a-4068-b7a0-f14b15bf83a6_ReleaseBuild") {
     features {
-        val feature1 = find<BuildFeature> {
+        remove {
             feature {
                 type = "symbol-indexer"
             }
-        }
-        feature1.apply {
-            enabled = false
         }
     }
 }
