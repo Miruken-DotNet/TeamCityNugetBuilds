@@ -213,6 +213,15 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
         buildType.buildNumberPattern = "%BuildFormatSpecification%"
 
+        buildType.features {
+            feature {
+                type = "JetBrains.AssemblyInfo"
+                param("file-format",     "%DotNetAssemblyVersion%")
+                param("assembly-format", "%DotNetAssemblyVersion%")
+                param("info-format",     "%BuildFormatSpecification%")
+            }
+        }
+
         return buildType
     }
 
@@ -243,14 +252,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
                 perCheckinTriggering     = true
                 groupCheckinsByCommitter = true
                 enableQueueOptimization  = false
-            }
-        }
-
-        features {
-            feature {
-                id      = "symbol-indexer"
-                type    = "symbol-indexer"
-                enabled = false
             }
         }
     }))
@@ -302,13 +303,6 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
             root(releaseVcsRoot)
             cleanCheckout = true
             checkoutMode = CheckoutMode.ON_AGENT
-        }
-
-        features {
-            feature {
-                id   = "${solution.id}_symbol-indexer"
-                type = "symbol-indexer"
-            }
         }
     }))))
 
