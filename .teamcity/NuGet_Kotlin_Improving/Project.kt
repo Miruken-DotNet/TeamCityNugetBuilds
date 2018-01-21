@@ -57,7 +57,7 @@ object Project : Project({
     subProject(configureNugetSolutionProject(NugetSolution(
             guid              = "1852e351-879e-426d-9bb7-299060589c6f",
             parentId          = "NuGet_Kotlin_Improving",
-            id                = "NuGet_Kotlin_Improving_ImprovingHighwayDataScope",
+            id                = "NuGet_Kotlin_Improving_ImpHghwyDtScp",
             name              = "Improving.Highway.Data.Scope Solution",
             codeGithubUrl     = "git@github.com:improving/Improving.Highway.Data.Scope.git",
             nugetApiKey       = "%ImprovingNugetApiKey%",
