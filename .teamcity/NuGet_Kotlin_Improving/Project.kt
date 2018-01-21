@@ -72,4 +72,23 @@ object Project : Project({
                             packageName = "Improving.Highway.Data.Scope",
                             nuspecFile  = "Source\\Improving.Highway.Data.Scope\\Improving.Highway.Data.Scope.nuspec")
             ))))
+
+    subProject(configureNugetSolutionProject(NugetSolution(
+            guid              = "dcc81349-f028-45f7-acbc-8cfb7a90d940",
+            parentId          = "NuGet_Kotlin_Improving",
+            id                = "NuGet_Kotlin_Improving_ImprovingMediatR",
+            name              = "Improving.MediatR Solution",
+            codeGithubUrl     = "git@github.com:improving/Improving.MediatR.git",
+            nugetApiKey       = "%ImprovingNugetApiKey%",
+            solutionFile      = "Improving.MediatR.sln",
+            testAssemblies    = "Test\\Improving.MediatR.Test\\bin\\Improving.MediatR.Tests.dll",
+            majorVersion      = "3",
+            minorVersion      = "0",
+            patchVersion      = "3",
+            nugetProjects = listOf(
+                    NugetProject(
+                            id          = "ImprovingMediatR",
+                            packageName = "Improving.MediatR",
+                            nuspecFile  = "Source\\Improving.Mediatr\\Improving.MediatR.nuspec")
+            ))))
 })
