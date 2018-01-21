@@ -47,7 +47,11 @@ object Project : Project({
                     NugetProject(
                             id          = "ImprovingDbUp",
                             packageName = "Improving.DbUp",
-                            nuspecFile  = "Source\\Improving.DbUp\\Improving.DbUp.nuspec")
+                            nuspecFile  = "Source\\Improving.DbUp\\Improving.DbUp.nuspec"),
+                    NugetProject(
+                            id          = "ImprovingDbUpQuickStart",
+                            packageName = "Improving.DbUp.QuickStart",
+                            nuspecFile  = "Source\\Improving.DbUp.QuickStart\\Improving.DbUp.QuickStart.nuspec")
             ))))
 
     subProject(configureNugetSolutionProject(NugetSolution(
