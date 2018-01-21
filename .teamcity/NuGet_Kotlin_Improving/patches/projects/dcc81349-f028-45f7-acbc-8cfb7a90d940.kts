@@ -15,7 +15,7 @@ changeProject("dcc81349-f028-45f7-acbc-8cfb7a90d940") {
             param("PatchVersion", "3")
         }
         update {
-            param("PatchVersion", "4")
+            param("PatchVersion", "5")
         }
     }
 }
