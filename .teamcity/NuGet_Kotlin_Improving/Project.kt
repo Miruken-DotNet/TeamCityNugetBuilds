@@ -49,4 +49,23 @@ object Project : Project({
                             packageName = "Improving.DbUp",
                             nuspecFile  = "Source\\Improving.DbUp\\Improving.DbUp.nuspec")
             ))))
+
+    subProject(configureNugetSolutionProject(NugetSolution(
+            guid              = "1852e351-879e-426d-9bb7-299060589c6f\n",
+            parentId          = "NuGet_Kotlin_Improving",
+            id                = "NuGet_Kotlin_Improving_ImprovingHighwayDataScope",
+            name              = "Improving.Highway.Data.Scope Solution",
+            codeGithubUrl     = "git@github.com:improving/Improving.Highway.Data.Scope.git",
+            nugetApiKey       = "%ImprovingNugetApiKey%",
+            solutionFile      = "Improving.Highway.Data.Scope.sln",
+            testAssemblies    = "Test\\Improving.Highway.Data.Scope.Test\\bin\\Improving.Highway.Data.Scope.Test.dll",
+            majorVersion      = "2",
+            minorVersion      = "0",
+            patchVersion      = "0",
+            nugetProjects = listOf(
+                    NugetProject(
+                            id          = "ImprovingHighwayDataScope",
+                            packageName = "Improving.Highway.Data.Scope",
+                            nuspecFile  = "Source\\Improving.Highway.Data.Scope\\Improving.Highway.Data.Scope.nuspec")
+            ))))
 })
