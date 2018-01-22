@@ -31,6 +31,9 @@ class NugetSolution(
     val ciVcsRootId: String
         get() = "${id}_CIVCSRoot"
 
+    val preReleaseVcsRootId: String
+        get() = "${id}_PreReleaseVCSRoot"
+
     val releaseVcsRootId: String
         get() = "${id}_ReleaseVCSRoot"
 
@@ -59,6 +62,19 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         uuid             = "${solution.guid}CIVcsRoot"
         id               = solution.ciVcsRootId
         name             = "${solution.codeGithubUrl}_CI"
+        url              = solution.codeGithubUrl
+        branch           = "%DefaultBranch%"
+        branchSpec       = "%BranchSpecification%"
+        agentCleanPolicy = GitVcsRoot.AgentCleanPolicy.ALWAYS
+        authMethod = uploadedKey {
+            uploadedKey = "provenstyle"
+        }
+    })
+
+    val preReleaseVcsRoot = GitVcsRoot({
+        uuid             = "${solution.guid}PreReleaseVcsRoot"
+        id               = solution.preReleaseVcsRootId
+        name             = "${solution.codeGithubUrl}_PreRelease"
         url              = solution.codeGithubUrl
         branch           = "%DefaultBranch%"
         branchSpec       = "%BranchSpecification%"
@@ -272,7 +288,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         }
 
         vcs {
-            root(releaseVcsRoot)
+            root(preReleaseVcsRoot)
             cleanCheckout = true
         }
 
