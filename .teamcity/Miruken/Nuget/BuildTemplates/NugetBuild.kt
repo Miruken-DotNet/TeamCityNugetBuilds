@@ -346,6 +346,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         description = "CI/CD for ${solution.solutionFile}"
 
         vcsRoot(ciVcsRoot)
+        vcsRoot(preReleaseVcsRoot)
         vcsRoot(releaseVcsRoot)
 
         buildType(ciBuild)
