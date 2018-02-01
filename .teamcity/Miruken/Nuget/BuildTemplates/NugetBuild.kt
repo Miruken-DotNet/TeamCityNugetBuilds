@@ -475,8 +475,9 @@ fun configureNugetDeployProject (
                 }
 
                 artifacts {
-                    id            = "${baseId}_PreRelease_ARTIFACT_DEPENDENCY"
-                    artifactRules = "%ArtifactsOut%"
+                    id               = "${baseId}_PreRelease_ARTIFACT_DEPENDENCY"
+                    cleanDestination = true
+                    artifactRules    = "%ArtifactsOut%"
                 }
             }
         }
@@ -510,8 +511,9 @@ fun configureNugetDeployProject (
                 }
 
                 artifacts {
-                    id            = "${baseId}_Release_ARTIFACT_DEPENDENCY"
-                    artifactRules = "%ArtifactsOut%"
+                    id               = "${baseId}_Release_ARTIFACT_DEPENDENCY"
+                    cleanDestination = true
+                    artifactRules    = "%ArtifactsOut%"
                 }
             }
         }
