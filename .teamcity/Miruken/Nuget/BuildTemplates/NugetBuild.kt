@@ -247,6 +247,8 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         name        = "CI Build"
         description = "Watches git repo & creates a build for any change to any branch. Runs tests. Does NOT package/deploy NuGet packages!"
 
+        allowExternalStatus = true
+
         params {
             param("BranchSpecification", "+:refs/heads/(*)")
             param("MajorVersion",        "0")
@@ -279,6 +281,8 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         description   = "This will push a NuGet package with a -PreRelease tag for testing from the develop branch. NO CI.   (Note: Non-prerelease nuget packages come from the master branch)"
         artifactRules = "%ArtifactsIn%"
 
+        allowExternalStatus = true
+
         params {
             param("BranchSpecification", """
             +:refs/heads/(develop)
@@ -307,6 +311,8 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         name          = "Release Build"
         description   = "This will push a NuGet package from the MASTER branch. NO CI."
         artifactRules = "%ArtifactsIn%"
+
+        allowExternalStatus = true
 
         params {
             param("BranchSpecification",              "+:refs/heads/(master)")
