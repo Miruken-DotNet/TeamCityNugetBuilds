@@ -10,11 +10,6 @@ To apply the patch, change the buildType with uuid = '2847660e-819a-481f-924f-db
 accordingly and delete the patch script.
 */
 changeBuildType("2847660e-819a-481f-924f-db2309e9d912_MirukenMvc_DeployRelease") {
-    check(paused == false) {
-        "Unexpected paused: '$paused'"
-    }
-    paused = true
-
     expectSteps {
         step {
             name = "NuGet Pack for NuGet.org"

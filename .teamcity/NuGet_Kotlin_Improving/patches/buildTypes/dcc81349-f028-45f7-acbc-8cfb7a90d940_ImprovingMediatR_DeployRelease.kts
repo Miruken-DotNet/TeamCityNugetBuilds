@@ -10,11 +10,6 @@ To apply the patch, change the buildType with uuid = 'dcc81349-f028-45f7-acbc-8c
 accordingly and delete the patch script.
 */
 changeBuildType("dcc81349-f028-45f7-acbc-8cfb7a90d940_ImprovingMediatR_DeployRelease") {
-    check(paused == false) {
-        "Unexpected paused: '$paused'"
-    }
-    paused = true
-
     expectSteps {
         step {
             name = "NuGet Pack for NuGet.org"

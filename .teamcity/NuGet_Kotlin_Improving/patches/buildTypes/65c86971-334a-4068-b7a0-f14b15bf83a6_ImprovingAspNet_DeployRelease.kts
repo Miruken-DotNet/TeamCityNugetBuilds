@@ -10,11 +10,6 @@ To apply the patch, change the buildType with uuid = '65c86971-334a-4068-b7a0-f1
 accordingly and delete the patch script.
 */
 changeBuildType("65c86971-334a-4068-b7a0-f14b15bf83a6_ImprovingAspNet_DeployRelease") {
-    check(paused == false) {
-        "Unexpected paused: '$paused'"
-    }
-    paused = true
-
     expectSteps {
         step {
             name = "NuGet Pack for NuGet.org"

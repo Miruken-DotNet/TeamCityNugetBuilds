@@ -10,11 +10,6 @@ To apply the patch, change the buildType with uuid = '1852e351-879e-426d-9bb7-29
 accordingly and delete the patch script.
 */
 changeBuildType("1852e351-879e-426d-9bb7-299060589c6f_ImprovingHighwayDataScope_DeployRelease") {
-    check(paused == false) {
-        "Unexpected paused: '$paused'"
-    }
-    paused = true
-
     expectSteps {
         step {
             name = "NuGet Pack for NuGet.org"

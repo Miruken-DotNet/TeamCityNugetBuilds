@@ -10,11 +10,6 @@ To apply the patch, change the buildType with uuid = '444fa27c-654b-4804-81bb-89
 accordingly and delete the patch script.
 */
 changeBuildType("444fa27c-654b-4804-81bb-89c1babd42ce_ImprovingDbUpQuickStart_DeployRelease") {
-    check(paused == false) {
-        "Unexpected paused: '$paused'"
-    }
-    paused = true
-
     expectSteps {
         step {
             name = "NuGet Pack for NuGet.org"
