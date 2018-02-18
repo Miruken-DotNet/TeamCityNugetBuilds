@@ -100,8 +100,9 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
     fun checkForPreRelease(buildType: BuildType) : BuildType{
         buildType.steps {
             powerShell {
-                name = "Check For PreRelease Dependency"
+                name                = "Check For PreRelease Dependency"
                 formatStderrAsError = true
+                executionMode       = BuildStep.ExecutionMode.RUN_ON_SUCCESS
                 scriptMode = script {
                     content = """
                         try{
@@ -120,7 +121,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
                             return 0
                         } catch {
                             Write-Error ${'$'}_
-                            Write-Host "##teamcity[buildStatus status='FAILURE']"
+                            Write-Host "##teamcity[buildStatus status='FAILURE' text='PreRelease dependency detected']"
                             return 1
                         }
                     """.trimIndent()
