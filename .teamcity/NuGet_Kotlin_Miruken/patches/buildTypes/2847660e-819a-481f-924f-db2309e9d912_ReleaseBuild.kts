@@ -127,7 +127,6 @@ changeBuildType("2847660e-819a-481f-924f-db2309e9d912_ReleaseBuild") {
                                         throw "Prerelease dependency found in ${'$'}(${'$'}packageConfig.FullName)"
                                     }
                                 }
-                                
                             }
                         
                             return 0
