@@ -227,6 +227,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
     fun dotNetBuild(buildType: BuildType) : BuildType{
         test(compile(restoreNuget(buildType)))
 
+        buildType.maxRunningBuilds   = 1
         buildType.buildNumberPattern = "%BuildFormatSpecification%"
 
         buildType.features {
@@ -460,6 +461,7 @@ fun configureNugetDeployProject (
         name               = "Deploy PreRelease"
         description        = "This will push a NuGet package with a -PreRelease tag for testing from the develop branch. NO CI.   (Note: Non-prerelease nuget packages come from the master branch)"
         buildNumberPattern = "%BuildFormatSpecification%"
+        maxRunningBuilds   = 1
 
         params {
             param("BuildFormatSpecification", "%dep.${solution.preReleaseBuildId}.BuildFormatSpecification%")
@@ -496,6 +498,7 @@ fun configureNugetDeployProject (
         description  = "This will push a NuGet package from the MASTER branch. NO CI."
 
         buildNumberPattern = "%BuildFormatSpecification%"
+        maxRunningBuilds   = 1
 
         params {
             param("BuildFormatSpecification", "%dep.${solution.releaseBuildId}.BuildFormatSpecification%")
