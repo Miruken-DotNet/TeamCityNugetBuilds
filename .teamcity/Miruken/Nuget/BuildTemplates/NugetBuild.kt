@@ -97,12 +97,45 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
         }
     })
 
+    fun checkForPreRelease(buildType: BuildType) : BuildType{
+        buildType.steps {
+            powerShell {
+                name = "Check For PreRelease Dependency"
+                formatStderrAsError = true
+                scriptMode = script {
+                    content = """
+                        try{
+                            ${'$'}packageConfigs = @(Get-ChildItem -Path .\ -Recurse -Include packages.config)
+                            foreach(${'$'}packageConfig in ${'$'}packageConfigs )
+                            {
+                                ${'$'}text = Get-Content ${'$'}packageConfig -Raw
+                                ${'$'}keywords = @("prerelease", "alpha", "beta")
+                                foreach(${'$'}keyword in ${'$'}keywords){
+                                    if(${'$'}text -like "*${'$'}keyword*") {
+                                        throw "Prerelease dependency found in ${'$'}(${'$'}packageConfig.FullName)"
+                                    }
+                                }
+                            }
+
+                            return 0
+                        } catch {
+                            Write-Error ${'$'}_
+                            Write-Host "##teamcity[buildStatus status='FAILURE']"
+                            return 1
+                        }
+                    """.trimIndent()
+                }
+            }
+        }
+        return buildType
+    }
     fun restoreNuget(buildType: BuildType) : BuildType{
         buildType.steps {
             step {
-                name = "Restore NuGet Packages"
-                id   = "${buildType.id}_RestoreNugetStep"
-                type = "jb.nuget.installer"
+                name          = "Restore NuGet Packages"
+                id            = "${buildType.id}_RestoreNugetStep"
+                type          = "jb.nuget.installer"
+                executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
                 param("toolPathSelector",          "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
                 param("nuget.path",                "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
                 param("nuget.sources",             "%PackageSources%")
@@ -125,6 +158,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
                 targets             = "%BuildTargets%"
                 configuration       = "%BuildConfiguration%"
                 platform            = "Any CPU"
+                executionMode       = BuildStep.ExecutionMode.RUN_ON_SUCCESS
             }
         }
         return buildType
@@ -137,6 +171,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
                 includeTestFileNames = "%TestAssemblies%"
                 runSettings          = ""
                 testCaseFilter       = "%TestCaseFilter%"
+                executionMode        = BuildStep.ExecutionMode.RUN_ON_SUCCESS
                 coverage = dotcover {
                     toolPath = "%teamcity.tool.JetBrains.dotCover.CommandLineTools.bundled%"
                 }
@@ -148,10 +183,11 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
     fun versionBuild(buildType: BuildType) : BuildType{
         buildType.steps {
             powerShell {
-                name     = "Increment PatchVersion And Reset Build Counters"
-                id       = "${buildType.id}_VersionStep"
-                platform = PowerShellStep.Platform.x86
-                edition  = PowerShellStep.Edition.Desktop
+                name          = "Increment PatchVersion And Reset Build Counters"
+                id            = "${buildType.id}_VersionStep"
+                platform      = PowerShellStep.Platform.x86
+                edition       = PowerShellStep.Edition.Desktop
+                executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
                 scriptMode = script {
                     content = """
                         ${'$'}baseUri           = "localhost"
@@ -200,10 +236,11 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
     fun tagBuild(buildType: BuildType) : BuildType{
         buildType.steps {
             powerShell {
-                name       = "Tag Build From Master Branch"
-                id         = "${buildType.id}_TagStep"
-                platform   = PowerShellStep.Platform.x86
-                edition    = PowerShellStep.Edition.Desktop
+                name          = "Tag Build From Master Branch"
+                id            = "${buildType.id}_TagStep"
+                platform      = PowerShellStep.Platform.x86
+                edition       = PowerShellStep.Edition.Desktop
+                executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
                 scriptMode = script {
                     content = """
                     ${'$'}branch = "%teamcity.build.branch%"
@@ -306,7 +343,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
     }))
 
 
-    val releaseBuild = versionBuild(tagBuild(dotNetBuild(BuildType({
+    val releaseBuild = versionBuild(tagBuild(dotNetBuild(checkForPreRelease(BuildType({
         uuid          = "${solution.guid}_ReleaseBuild"
         id            = solution.releaseBuildId
         name          = "Release Build"
@@ -327,7 +364,7 @@ fun configureNugetSolutionProject(solution: NugetSolution) : Project{
             cleanCheckout = true
             checkoutMode = CheckoutMode.ON_AGENT
         }
-    }))))
+    })))))
 
     val deploymentProject = Project({
         uuid     = "${solution.guid}_DeploymentProject"
@@ -398,9 +435,10 @@ fun configureNugetDeployProject (
 
         buildType.steps {
             step {
-                name = "Prerelease Nuget on TC Feed"
-                id = "${buildType.id}_PrereleaseNugetStep"
-                type = "jb.nuget.pack"
+                name          = "Prerelease Nuget on TC Feed"
+                id            = "${buildType.id}_PrereleaseNugetStep"
+                type          = "jb.nuget.pack"
+                executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
                 param("toolPathSelector",            "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
                 param("nuget.pack.output.clean",     "true")
                 param("nuget.pack.specFile",         "%NuGetPackSpecFiles%")
@@ -419,9 +457,10 @@ fun configureNugetDeployProject (
 
         buildType.steps {
             step {
-                name = "NuGet Pack for NuGet.org"
-                id   = "${buildType.id}_ReleasePackStep"
-                type = "jb.nuget.pack"
+                name          = "NuGet Pack for NuGet.org"
+                id            = "${buildType.id}_ReleasePackStep"
+                type          = "jb.nuget.pack"
+                executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
                 param("toolPathSelector",            "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
                 param("nuget.pack.output.clean",     "true")
                 param("nuget.pack.specFile",         "%NuGetPackSpecFiles%")
@@ -432,9 +471,10 @@ fun configureNugetDeployProject (
                 param("nuget.pack.version",          "%PackageVersion%")
             }
             step {
-                name = "Nuget Publish to NuGet.org"
-                id   = "${buildType.id}_ReleasePublishNugetStep"
-                type = "jb.nuget.publish"
+                name          = "Nuget Publish to NuGet.org"
+                id            = "${buildType.id}_ReleasePublishNugetStep"
+                type          = "jb.nuget.publish"
+                executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
                 param("secure:nuget.api.key", apiKey)
                 param("toolPathSelector",     "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
                 param("nuget.path",           "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
@@ -442,9 +482,10 @@ fun configureNugetDeployProject (
                 param("nuget.publish.files",  "nupkg/%NupkgName%")
             }
             step {
-                name = "Nuget Publish to SymbolSource.org"
-                id   = "${buildType.id}_ReleasePublishSymbolsStep"
-                type = "jb.nuget.publish"
+                name          = "Nuget Publish to SymbolSource.org"
+                id            = "${buildType.id}_ReleasePublishSymbolsStep"
+                type          = "jb.nuget.publish"
+                executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
                 param("secure:nuget.api.key", apiKey)
                 param("nuget.path",           "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
                 param("nuget.publish.source", "https://nuget.smbsrc.net/")
