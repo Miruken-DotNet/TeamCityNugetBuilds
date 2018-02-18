@@ -112,7 +112,7 @@ changeBuildType("2847660e-819a-481f-924f-db2309e9d912_ReleaseBuild") {
     steps {
         insert(0) {
             powerShell {
-                name = "Check for prerelease dependency"
+                name = "Check For Prerelease Dependency"
                 formatStderrAsError = true
                 scriptMode = script {
                     content = """
