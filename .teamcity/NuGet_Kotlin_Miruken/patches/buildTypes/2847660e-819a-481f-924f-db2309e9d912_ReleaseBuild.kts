@@ -133,6 +133,7 @@ changeBuildType("2847660e-819a-481f-924f-db2309e9d912_ReleaseBuild") {
                             return 0
                         } catch {
                             Write-Error ${'$'}_
+                            Write-Host "##teamcity[buildStatus status='FAILURE']"
                             return 1
                         }
                     """.trimIndent()
