@@ -1,6 +1,7 @@
 package NuGet_Kotlin_Miruken.patches.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.v2017_2.*
+import jetbrains.buildServer.configs.kotlin.v2017_2.BuildStep
 import jetbrains.buildServer.configs.kotlin.v2017_2.buildSteps.PowerShellStep
 import jetbrains.buildServer.configs.kotlin.v2017_2.buildSteps.VisualStudioStep
 import jetbrains.buildServer.configs.kotlin.v2017_2.buildSteps.powerShell
@@ -138,6 +139,10 @@ changeBuildType("2847660e-819a-481f-924f-db2309e9d912_ReleaseBuild") {
                     """.trimIndent()
                 }
             }
+        }
+        update<BuildStep>(1) {
+            executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
+            param("toolPathSelector", "")
         }
     }
 }
