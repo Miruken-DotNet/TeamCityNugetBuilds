@@ -117,6 +117,10 @@ object Project : Project({
                     NugetProject(
                             id          = "MirukenAspNetSwagger",
                             packageName = "Miruken.AspNet.Swagger",
-                            nuspecFile  = "Source\\Miruken.AspNet.Swagger\\Miruken.AspNet.Swagger.nuspec")
+                            nuspecFile  = "Source\\Miruken.AspNet.Swagger\\Miruken.AspNet.Swagger.nuspec"),
+                    NugetProject(
+                            id          = "MirukenMediateApi",
+                            packageName = "Miruken.Mediate.Api",
+                            nuspecFile  = "Source\\Miruken.Mediate.Api\\Miruken.Mediate.Api.nuspec")
             ))))
 })
