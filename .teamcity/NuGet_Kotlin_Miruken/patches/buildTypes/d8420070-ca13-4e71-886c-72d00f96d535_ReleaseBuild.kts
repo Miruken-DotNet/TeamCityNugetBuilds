@@ -13,6 +13,7 @@ changeBuildType("d8420070-ca13-4e71-886c-72d00f96d535_ReleaseBuild") {
         add {
             feature {
                 type = "symbol-indexer"
+                enabled = false
             }
         }
     }
