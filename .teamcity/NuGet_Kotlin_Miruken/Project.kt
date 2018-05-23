@@ -41,7 +41,11 @@ object Project : Project({
                     NugetProject(
                             id          = "MirukenValidateCastle",
                             packageName = "Miruken.Validate.Castle",
-                            nuspecFile  = "Source\\Miruken.Validate.Castle\\Miruken.Validate.Castle.nuspec")
+                            nuspecFile  = "Source\\Miruken.Validate.Castle\\Miruken.Validate.Castle.nuspec"),
+                    NugetProject(
+                            id          = "MirukenSecurity",
+                            packageName = "Miruken.Security",
+                            nuspecFile  = "Source\\Miruken.Security\\Miruken.Security.nuspec")
             ))))
 
     subProject(configureNugetSolutionProject(NugetSolution(
