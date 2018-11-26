@@ -23,5 +23,11 @@ changeProject("50fcdffb-6d49-43d4-a0fc-8e6dbc47a532") {
         update {
             param("MinorVersion", "0")
         }
+        expect {
+            param("PatchVersion", "18")
+        }
+        update {
+            param("PatchVersion", "19")
+        }
     }
 }
