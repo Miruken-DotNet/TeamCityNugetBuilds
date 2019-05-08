@@ -131,7 +131,7 @@ object Project : Project({
     subProject(configureNugetSolutionProject(NugetSolution(
             guid              = "18499CBF-CC08-47D3-92D5-E4B9C09BD7B1",
             parentId          = "NuGet_Kotlin_Miruken",
-            id                = "NuGet_Kotlin_Miruken_MirukenMassTransitSln",
+            id                = "NuGet_Kotlin_Miruken_MirukenMTSln",
             name              = "Miruken.MassTransit Solution",
             codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.MassTransit.git",
             nugetApiKey       = "%MirukenNugetApiKey%",
@@ -144,11 +144,11 @@ object Project : Project({
             patchVersion      = "1",
             nugetProjects = listOf(
                     NugetProject(
-                            id          = "MirukenMassTransit",
+                            id          = "MirukenMT",
                             packageName = "Miruken.MassTransit",
                             nuspecFile  = "Source\\Miruken.MassTransit\\Miruken.MassTransit.nuspec"),
                     NugetProject(
-                            id          = "MirukenMassTransitApi",
+                            id          = "MirukenMTApi",
                             packageName = "Miruken.MassTransit.Api",
                             nuspecFile  = "Source\\Miruken.MassTransit.Api\\Miruken.MassTransit.Api.nuspec")
             ))))
