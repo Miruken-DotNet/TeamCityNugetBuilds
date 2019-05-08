@@ -127,4 +127,29 @@ object Project : Project({
                             packageName = "Miruken.Mediate.Api",
                             nuspecFile  = "Source\\Miruken.Mediate.Api\\Miruken.Mediate.Api.nuspec")
             ))))
+
+    subProject(configureNugetSolutionProject(NugetSolution(
+            guid              = "18499CBF-CC08-47D3-92D5-E4B9C09BD7B1",
+            parentId          = "NuGet_Kotlin_Miruken",
+            id                = "NuGet_Kotlin_Miruken_MirukenMassTransitSln",
+            name              = "Miruken.MassTransit Solution",
+            codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.MassTransit.git",
+            nugetApiKey       = "%MirukenNugetApiKey%",
+            solutionFile      = "Miruken.MassTransit.sln",
+            testAssemblies    = """
+                                    Test\IntegrationTests\bin\IntegrationTests.dll
+                                """.trimIndent(),
+            majorVersion      = "0",
+            minorVersion      = "0",
+            patchVersion      = "1",
+            nugetProjects = listOf(
+                    NugetProject(
+                            id          = "MirukenMassTransit",
+                            packageName = "Miruken.MassTransit",
+                            nuspecFile  = "Source\\Miruken.MassTransit\\Miruken.MassTransit.nuspec"),
+                    NugetProject(
+                            id          = "MirukenMassTransitApi",
+                            packageName = "Miruken.MassTransit.Api",
+                            nuspecFile  = "Source\\Miruken.MassTransit.Api\\Miruken.MassTransit.Api.nuspec")
+            ))))
 })
