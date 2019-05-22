@@ -21,13 +21,13 @@ changeProject("d8420070-ca13-4e71-886c-72d00f96d535") {
             param("MinorVersion", "6")
         }
         update {
-            param("MinorVersion", "1")
+            param("MinorVersion", "0")
         }
         expect {
             param("PatchVersion", "1")
         }
         update {
-            param("PatchVersion", "4")
+            param("PatchVersion", "0")
         }
     }
 }
