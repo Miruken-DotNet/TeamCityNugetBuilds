@@ -99,14 +99,6 @@ object Project : Project({
             patchVersion      = "1",
             nugetProjects = listOf(
                     NugetProject(
-                            id          = "MirukenMediate",
-                            packageName = "Miruken.Mediate",
-                            nuspecFile  = "Source\\Miruken.Mediate\\Miruken.Mediate.nuspec"),
-                    NugetProject(
-                            id          = "MirukenMediateCastle",
-                            packageName = "Miruken.Mediate.Castle",
-                            nuspecFile  = "Source\\Miruken.Mediate.Castle\\Miruken.Mediate.Castle.nuspec"),
-                    NugetProject(
                             id          = "MirukenHttp",
                             packageName = "Miruken.Http",
                             nuspecFile  = "Source\\Miruken.Http\\Miruken.Http.nuspec"),
@@ -121,11 +113,7 @@ object Project : Project({
                     NugetProject(
                             id          = "MirukenAspNetSwagger",
                             packageName = "Miruken.AspNet.Swagger",
-                            nuspecFile  = "Source\\Miruken.AspNet.Swagger\\Miruken.AspNet.Swagger.nuspec"),
-                    NugetProject(
-                            id          = "MirukenMediateApi",
-                            packageName = "Miruken.Mediate.Api",
-                            nuspecFile  = "Source\\Miruken.Mediate.Api\\Miruken.Mediate.Api.nuspec")
+                            nuspecFile  = "Source\\Miruken.AspNet.Swagger\\Miruken.AspNet.Swagger.nuspec")
             ))))
 
     subProject(configureNugetSolutionProject(NugetSolution(
