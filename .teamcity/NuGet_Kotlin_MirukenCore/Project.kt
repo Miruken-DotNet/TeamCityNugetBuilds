@@ -15,8 +15,8 @@ object Project : Project({
 
     subProject(configureNugetSolutionProject(NugetSolution(
             guid              = "923b8dd0-4464-4d2d-a137-197ad679e5cd",
-            parentId          = "NuGet_Kotlin_Miruken",
-            id                = "NuGet_Kotlin_Miruken_MirukenSln",
+            parentId          = "NuGet_Kotlin_MirukenCore",
+            id                = "NuGet_Kotlin_MirukenCore_MirukenSln",
             name              = "Miruken Solution",
             codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.git",
             nugetApiKey       = "%MirukenNugetApiKey%",
@@ -50,8 +50,8 @@ object Project : Project({
 
     subProject(configureNugetSolutionProject(NugetSolution(
             guid              = "0df6cd1a-93d3-4135-8f13-13b0ccdfdb97",
-            parentId          = "NuGet_Kotlin_Miruken",
-            id                = "NuGet_Kotlin_Miruken_MirukenMvcSln",
+            parentId          = "NuGet_Kotlin_MirukenCore",
+            id                = "NuGet_Kotlin_MirukenCore_MirukenMvcSln",
             name              = "Miruken.Mvc Solution",
             codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.Mvc.git",
             nugetApiKey       = "%MirukenNugetApiKey%",
@@ -81,8 +81,8 @@ object Project : Project({
 
     subProject(configureNugetSolutionProject(NugetSolution(
             guid              = "815fa438-ba8b-4a82-8363-13ec84f17ad0",
-            parentId          = "NuGet_Kotlin_Miruken",
-            id                = "NuGet_Kotlin_Miruken_MirukenMediateSln",
+            parentId          = "NuGet_Kotlin_MirukenCore",
+            id                = "NuGet_Kotlin_MirukenCore_MirukenMediateSln",
             name              = "Miruken.Mediate Solution",
             codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.Mediate.git",
             nugetApiKey       = "%MirukenNugetApiKey%",
@@ -118,8 +118,8 @@ object Project : Project({
 
     subProject(configureNugetSolutionProject(NugetSolution(
             guid              = "2bdb0212-b5e1-4386-9ecc-7bf98eee19b0",
-            parentId          = "NuGet_Kotlin_Miruken",
-            id                = "NuGet_Kotlin_Miruken_MirukenMTSln",
+            parentId          = "NuGet_Kotlin_MirukenCore",
+            id                = "NuGet_Kotlin_MirukenCore_MirukenMTSln",
             name              = "Miruken.MassTransit Solution",
             codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.MassTransit.git",
             nugetApiKey       = "%MirukenNugetApiKey%",
