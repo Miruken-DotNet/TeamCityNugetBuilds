@@ -3,6 +3,7 @@ package NuGet_Kotlin_MirukenCore.patches.buildTypes
 import jetbrains.buildServer.configs.kotlin.v2018_2.*
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.VisualStudioStep
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.dotnetBuild
+import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.dotnetTest
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.nuGetInstaller
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.visualStudio
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.vstest
@@ -56,7 +57,14 @@ changeBuildType(uuid("923b8dd0-4464-4d2d-a137-197ad679e5cd_CIBuild")) {
                 param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
             }
         }
-        items.removeAt(2)
-        items.removeAt(2)
+        insert(2) {
+            dotnetTest {
+                name = "Unit Tests"
+                projects = "Test/*/*.csproj"
+                param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
+            }
+        }
+        items.removeAt(3)
+        items.removeAt(3)
     }
 }
