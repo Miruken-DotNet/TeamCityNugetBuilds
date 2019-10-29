@@ -48,8 +48,7 @@ changeBuildType(uuid("923b8dd0-4464-4d2d-a137-197ad679e5cd_CIBuild")) {
         }
     }
     steps {
-        items.removeAt(1)
-        insert(2) {
+        insert(1) {
             dotnetBuild {
                 name = "Compile"
                 projects = "Miruken.sln"
@@ -57,5 +56,7 @@ changeBuildType(uuid("923b8dd0-4464-4d2d-a137-197ad679e5cd_CIBuild")) {
                 param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
             }
         }
+        items.removeAt(2)
+        items.removeAt(2)
     }
 }
