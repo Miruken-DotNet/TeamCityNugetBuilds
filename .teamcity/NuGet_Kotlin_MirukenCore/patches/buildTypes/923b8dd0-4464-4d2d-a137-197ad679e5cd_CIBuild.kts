@@ -48,7 +48,8 @@ changeBuildType(uuid("923b8dd0-4464-4d2d-a137-197ad679e5cd_CIBuild")) {
         }
     }
     steps {
-        insert(3) {
+        items.removeAt(1)
+        insert(2) {
             dotnetBuild {
                 name = "Compile"
                 projects = "Miruken.sln"
