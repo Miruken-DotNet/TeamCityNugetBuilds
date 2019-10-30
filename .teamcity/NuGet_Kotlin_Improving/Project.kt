@@ -2,9 +2,9 @@ package NuGet_Kotlin_Improving
 
 import miruken.nuget.buildTemplates.NugetProject
 import miruken.nuget.buildTemplates.NugetSolution
-import miruken.nuget.buildTemplates.configureNugetSolutionProject
 import jetbrains.buildServer.configs.kotlin.v2018_2.AbsoluteId
 import jetbrains.buildServer.configs.kotlin.v2018_2.Project
+import miruken.nuget.buildTemplates.FullFramework
 
 object Project : Project({
     id("NuGet_Kotlin_Improving")
@@ -13,7 +13,7 @@ object Project : Project({
     name        = "Improving"
     description = "Improving Nugets"
 
-    subProject(configureNugetSolutionProject(NugetSolution(
+    subProject(FullFramework.configureNugetSolutionProject(NugetSolution(
             guid              = "65c86971-334a-4068-b7a0-f14b15bf83a6",
             parentId          = "NuGet_Kotlin_Improving",
             id                = "NuGet_Kotlin_Improving_ImprovingAspNet",
@@ -32,7 +32,7 @@ object Project : Project({
                             nuspecFile  = "Source\\Improving.AspNet\\Improving.AspNet.nuspec")
             ))))
 
-    subProject(configureNugetSolutionProject(NugetSolution(
+    subProject(FullFramework.configureNugetSolutionProject(NugetSolution(
             guid              = "444fa27c-654b-4804-81bb-89c1babd42ce",
             parentId          = "NuGet_Kotlin_Improving",
             id                = "NuGet_Kotlin_Improving_ImprovingDbUp",
@@ -55,7 +55,7 @@ object Project : Project({
                             nuspecFile  = "Source\\Improving.DbUp.QuickStart\\Improving.DbUp.QuickStart.nuspec")
             ))))
 
-    subProject(configureNugetSolutionProject(NugetSolution(
+    subProject(FullFramework.configureNugetSolutionProject(NugetSolution(
             guid              = "1852e351-879e-426d-9bb7-299060589c6f",
             parentId          = "NuGet_Kotlin_Improving",
             id                = "NuGet_Kotlin_Improving_ImpHghwyDtScp",
@@ -74,7 +74,7 @@ object Project : Project({
                             nuspecFile  = "Source\\Improving.Highway.Data.Scope\\Improving.Highway.Data.Scope.nuspec")
             ))))
 
-    subProject(configureNugetSolutionProject(NugetSolution(
+    subProject(FullFramework.configureNugetSolutionProject(NugetSolution(
             guid              = "dcc81349-f028-45f7-acbc-8cfb7a90d940",
             parentId          = "NuGet_Kotlin_Improving",
             id                = "NuGet_Kotlin_Improving_ImprovingMediatR",
