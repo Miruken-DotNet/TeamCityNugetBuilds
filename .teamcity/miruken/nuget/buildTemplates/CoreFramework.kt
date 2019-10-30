@@ -11,8 +11,8 @@ class CoreFramework {
             buildType.steps {
                 dotnetBuild {
                     name = "Compile"
-                    projects = "Miruken.sln"
-                    configuration = "Debug"
+                    projects = "%Solution%"
+                    configuration = "%BuildConfiguration%"
                     param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
                 }
             }
@@ -23,7 +23,7 @@ class CoreFramework {
             buildType.steps {
                 dotnetTest {
                     name = "Unit Tests"
-                    projects = "Test/*/*.csproj"
+                    projects = "%TestAssemblies%"
                     param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
                 }
             }
