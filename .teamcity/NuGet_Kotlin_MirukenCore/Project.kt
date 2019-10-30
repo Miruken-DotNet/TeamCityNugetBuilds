@@ -4,7 +4,7 @@ import miruken.nuget.buildTemplates.NugetProject
 import miruken.nuget.buildTemplates.NugetSolution
 import jetbrains.buildServer.configs.kotlin.v2018_2.*
 import jetbrains.buildServer.configs.kotlin.v2018_2.Project
-import miruken.nuget.buildTemplates.FullFramework
+import miruken.nuget.buildTemplates.CoreFramework
 
 object Project : Project({
     id("NuGet_Kotlin_MirukenCore")
@@ -13,7 +13,7 @@ object Project : Project({
     name        = "MirukenCore"
     description = "Miruken-DotNet Core NuGet Packages"
 
-    subProject(FullFramework.configureNugetSolutionProject(NugetSolution(
+    subProject(CoreFramework.configureNugetSolutionProject(NugetSolution(
             guid              = "923b8dd0-4464-4d2d-a137-197ad679e5cd",
             parentId          = "NuGet_Kotlin_MirukenCore",
             id                = "NuGet_Kotlin_MirukenCore_MirukenSln",
@@ -48,7 +48,7 @@ object Project : Project({
                             nuspecFile  = "Source\\Miruken.Secure\\Miruken.Secure.nuspec")
             ))))
 
-    subProject(FullFramework.configureNugetSolutionProject(NugetSolution(
+    subProject(CoreFramework.configureNugetSolutionProject(NugetSolution(
             guid              = "0df6cd1a-93d3-4135-8f13-13b0ccdfdb97",
             parentId          = "NuGet_Kotlin_MirukenCore",
             id                = "NuGet_Kotlin_MirukenCore_MirukenMvcSln",
@@ -79,7 +79,7 @@ object Project : Project({
                             nuspecFile  = "Source\\Miruken.Mvc.Wpf\\Miruken.Mvc.Wpf.nuspec")
             ))))
 
-    subProject(FullFramework.configureNugetSolutionProject(NugetSolution(
+    subProject(CoreFramework.configureNugetSolutionProject(NugetSolution(
             guid              = "815fa438-ba8b-4a82-8363-13ec84f17ad0",
             parentId          = "NuGet_Kotlin_MirukenCore",
             id                = "NuGet_Kotlin_MirukenCore_MirukenMediateSln",
@@ -116,7 +116,7 @@ object Project : Project({
                             nuspecFile  = "Source\\Miruken.AspNet.Swagger\\Miruken.AspNet.Swagger.nuspec")
             ))))
 
-    subProject(FullFramework.configureNugetSolutionProject(NugetSolution(
+    subProject(CoreFramework.configureNugetSolutionProject(NugetSolution(
             guid              = "2bdb0212-b5e1-4386-9ecc-7bf98eee19b0",
             parentId          = "NuGet_Kotlin_MirukenCore",
             id                = "NuGet_Kotlin_MirukenCore_MirukenMTSln",

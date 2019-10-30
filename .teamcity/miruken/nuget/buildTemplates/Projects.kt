@@ -3,7 +3,6 @@ package miruken.nuget.buildTemplates
 import jetbrains.buildServer.configs.kotlin.v2018_2.BuildType
 import jetbrains.buildServer.configs.kotlin.v2018_2.Project
 import jetbrains.buildServer.configs.kotlin.v2018_2.*
-import jetbrains.buildServer.configs.kotlin.v2018_2.triggers.finishBuildTrigger
 
 fun solutionProject(
         solution: NugetSolution,
@@ -68,106 +67,34 @@ fun deploymentProject(
     }
 
     for(nugetProject in solution.nugetProjects){
-        subProject(configureNugetDeployProject(solution, nugetProject, preReleaseBuild, releaseBuild))
+        subProject(nugetDeployProject(solution, nugetProject, preReleaseBuild, releaseBuild))
     }
 }
 
 
-fun configureNugetDeployProject (
+fun nugetDeployProject (
         solution: NugetSolution,
         project: NugetProject,
         preReleaseBuild: BuildType,
-        releaseBuild: BuildType) : Project{
+        releaseBuild: BuildType) : Project = Project {
 
     val baseUuid = "${solution.guid}_${project.id}"
     val baseId   = "${solution.id}_${project.id}"
 
-    val deployPreRelease =  deployPreReleaseNuget(BuildType {
-        id("${baseId}_DeployPreRelease")
-        uuid               = "${baseUuid}_DeployPreRelease"
-        name               = "Deploy PreRelease"
-        description        = "This will push a NuGet package with a -PreRelease tag for testing from the develop branch. NO CI.   (Note: Non-prerelease nuget packages come from the master branch)"
-        buildNumberPattern = "%BuildFormatSpecification%"
-        maxRunningBuilds   = 1
+    id(baseId)
+    uuid        = baseUuid
+    parentId    = AbsoluteId(solution.deploymentProjectId)
+    name        = project.packageName
+    description = "${project.packageName} nuget package"
 
-        params {
-            param("BuildFormatSpecification", "%dep.${solution.preReleaseBuildId}.BuildFormatSpecification%")
-            param("PackageVersion",           "%dep.${solution.preReleaseBuildId}.PackageVersion%")
-        }
+    val deployPreRelease = deployPreReleaseNuget(deployPreRelease(solution, baseId, baseUuid, preReleaseBuild))
+    val deployRelease    = deployReleaseNuget(solution.nugetApiKey, deployRelease(solution, baseId, baseUuid, releaseBuild))
 
-        triggers {
-            finishBuildTrigger {
-                id = "${baseId}_DeployPreRelease_TRIGGER"
-                buildType = solution.preReleaseBuildId
-                successfulOnly = true
-                branchFilter = "+:*"
-            }
-        }
+    buildType(deployPreRelease)
+    buildType(deployRelease)
 
-        dependencies {
-            dependency(preReleaseBuild) {
-                snapshot {
-                }
-
-                artifacts {
-                    id               = "${baseId}_PreRelease_ARTIFACT_DEPENDENCY"
-                    cleanDestination = true
-                    artifactRules    = "%ArtifactsOut%"
-                }
-            }
-        }
-    })
-
-    val deployRelease = deployReleaseNuget(solution.nugetApiKey, BuildType {
-        id("${baseId}_DeployRelease")
-        uuid         = "${baseUuid}_DeployRelease"
-        name         = "Deploy Release"
-        description  = "This will push a NuGet package from the MASTER branch. NO CI."
-
-        buildNumberPattern = "%BuildFormatSpecification%"
-        maxRunningBuilds   = 1
-
-        params {
-            param("BuildFormatSpecification", "%dep.${solution.releaseBuildId}.BuildFormatSpecification%")
-            param("PackageVersion",           "%dep.${solution.releaseBuildId}.PackageVersion%")
-            param("PrereleaseVersion",        "")
-        }
-
-        triggers {
-            finishBuildTrigger {
-                id             = "${baseId}_Release_TRIGGER"
-                buildType      = solution.releaseBuildId
-                branchFilter   = "+:master"
-            }
-        }
-
-        dependencies {
-            dependency(releaseBuild){
-                snapshot {
-                }
-
-                artifacts {
-                    id               = "${baseId}_Release_ARTIFACT_DEPENDENCY"
-                    cleanDestination = true
-                    artifactRules    = "%ArtifactsOut%"
-                }
-            }
-        }
-    })
-
-    return Project {
-        id(baseId)
-        uuid        = baseUuid
-        parentId    = AbsoluteId(solution.deploymentProjectId)
-        name        = project.packageName
-        description = "${project.packageName} nuget package"
-
-        buildType(deployPreRelease)
-        buildType(deployRelease)
-
-        params {
-            param("NuGetPackSpecFiles", project.nuspecFile)
-            param("PackageName",        project.packageName)
-        }
+    params {
+        param("NuGetPackSpecFiles", project.nuspecFile)
+        param("PackageName",        project.packageName)
     }
 }

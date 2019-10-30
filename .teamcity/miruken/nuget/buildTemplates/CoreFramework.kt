@@ -7,7 +7,7 @@ import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.visualStudio
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.vstest
 import jetbrains.buildServer.configs.kotlin.v2018_2.Project
 
-class FullFramework {
+class CoreFramework {
     companion object {
 
         private fun compile(buildType: BuildType) : BuildType{
@@ -46,7 +46,7 @@ class FullFramework {
             return buildType
         }
 
-        private fun dotNetBuild(buildType: BuildType) : BuildType{
+        private fun coreBuild(buildType: BuildType) : BuildType{
             test(compile(restoreNuget(buildType)))
 
             buildType.maxRunningBuilds   = 1
@@ -70,9 +70,9 @@ class FullFramework {
             val preReleaseVcsRoot = preReleaseVcsRoot(solution)
             val releaseVcsRoot    = releaseVcsRoot(solution)
 
-            val ciBuild           = dotNetBuild(ciBuild(solution, ciVcsRoot))
-            val preReleaseBuild   = dotNetBuild(preReleaseBuild(solution, preReleaseVcsRoot))
-            val releaseBuild      = versionBuild(tagBuild(dotNetBuild(checkForPreRelease(releaseBuild(solution, releaseVcsRoot)))))
+            val ciBuild           = coreBuild(ciBuild(solution, ciVcsRoot))
+            val preReleaseBuild   = coreBuild(preReleaseBuild(solution, preReleaseVcsRoot))
+            val releaseBuild      = versionBuild(tagBuild(coreBuild(checkForPreRelease(releaseBuild(solution, releaseVcsRoot)))))
 
             return solutionProject(
                     solution,
