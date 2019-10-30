@@ -26,7 +26,7 @@ changeBuildType(uuid("923b8dd0-4464-4d2d-a137-197ad679e5cd_Miruken_DeployPreRele
         }
     }
     steps {
-        insert(1) {
+        insert(0) {
             dotnetNugetPush {
                 name = "Prerelease Nuget on TC Feed (1)"
                 packages = "Source/Miruken/bin/Miruken.%PackageVersion%.nupkg"
@@ -38,5 +38,6 @@ changeBuildType(uuid("923b8dd0-4464-4d2d-a137-197ad679e5cd_Miruken_DeployPreRele
                 param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
             }
         }
+        items.removeAt(1)
     }
 }
