@@ -30,6 +30,18 @@ class CoreFramework {
             return buildType
         }
 
+        private fun pack(buildType: BuildType) : BuildType{
+            buildType.steps {
+                dotnetPack {
+                    name = ".NET CORE (pack)"
+                    projects = "%Solution%"
+                    args = "-p:PackageVersion=%PackageVersion% -p:DebugSymbols=true -p:DebugType=pdbonly -p:Version=%DotNetAssemblyVersion% --include-symbols --include-source"
+                    param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
+                }
+            }
+            return buildType
+        }
+
         private fun coreBuild(buildType: BuildType) : BuildType{
             test(compile(restoreNuget(buildType)))
 
@@ -55,8 +67,8 @@ class CoreFramework {
             val releaseVcsRoot    = releaseVcsRoot(solution)
 
             val ciBuild           = coreBuild(ciBuild(solution, ciVcsRoot))
-            val preReleaseBuild   = coreBuild(preReleaseBuild(solution, preReleaseVcsRoot))
-            val releaseBuild      = versionBuild(tagBuild(coreBuild(checkForPreRelease(releaseBuild(solution, releaseVcsRoot)))))
+            val preReleaseBuild   = pack(coreBuild(preReleaseBuild(solution, preReleaseVcsRoot)))
+            val releaseBuild      = versionBuild(tagBuild(pack(coreBuild(checkForPreRelease(releaseBuild(solution, releaseVcsRoot))))))
 
             return solutionProject(
                     solution,
