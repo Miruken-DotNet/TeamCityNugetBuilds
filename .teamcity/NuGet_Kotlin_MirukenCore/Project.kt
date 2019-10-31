@@ -22,9 +22,9 @@ object Project : Project({
             nugetApiKey       = "%MirukenNugetApiKey%",
             solutionFile      = "Miruken.sln",
             testAssemblies    = "**\\bin\\*Test*.dll",
-            majorVersion      = "1",
-            minorVersion      = "11",
-            patchVersion      = "18",
+            majorVersion      = "3",
+            minorVersion      = "99",
+            patchVersion      = "1",
             nugetProjects = listOf(
                     NugetProject(
                             id          = "Miruken",
@@ -57,9 +57,9 @@ object Project : Project({
             nugetApiKey       = "%MirukenNugetApiKey%",
             solutionFile      = "Miruken.Mvc.sln",
             testAssemblies    = "**\\bin\\*Test*.dll",
-            majorVersion      = "1",
-            minorVersion      = "5",
-            patchVersion      = "2",
+            majorVersion      = "2",
+            minorVersion      = "99",
+            patchVersion      = "1",
             nugetProjects = listOf(
                     NugetProject(
                             id          = "MirukenMvc",
@@ -94,8 +94,8 @@ object Project : Project({
                                     Test\Miruken.AspNet.Castle.Tests\bin\Miruken.AspNet.Castle.Tests.dll
                                     Test\Example.Tests\bin\Example.Tests.dll
                                 """.trimIndent(),
-            majorVersion      = "1",
-            minorVersion      = "6",
+            majorVersion      = "4",
+            minorVersion      = "99",
             patchVersion      = "1",
             nugetProjects = listOf(
                     NugetProject(
@@ -127,8 +127,8 @@ object Project : Project({
             testAssemblies    = """
                                     Test\IntegrationTests\bin\IntegrationTests.dll
                                 """.trimIndent(),
-            majorVersion      = "0",
-            minorVersion      = "0",
+            majorVersion      = "1",
+            minorVersion      = "99",
             patchVersion      = "1",
             nugetProjects = listOf(
                     NugetProject(
