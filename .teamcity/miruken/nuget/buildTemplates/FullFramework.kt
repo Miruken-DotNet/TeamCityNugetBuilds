@@ -46,7 +46,7 @@ class FullFramework {
             return buildType
         }
 
-        private fun dotNetBuild(buildType: BuildType) : BuildType{
+        private fun fullFrameworkBuild(buildType: BuildType) : BuildType{
             test(compile(restoreNuget(buildType)))
 
             buildType.maxRunningBuilds   = 1
@@ -64,17 +64,81 @@ class FullFramework {
             return buildType
         }
 
+        private fun deployPreReleaseNuget(buildType: BuildType) : BuildType{
+            buildType.steps {
+                step {
+                    name          = "Prerelease Nuget on TC Feed"
+                    id            = "${buildType.id}_PrereleaseNugetStep"
+                    type          = "jb.nuget.pack"
+                    executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
+                    param("toolPathSelector",            "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                    param("nuget.pack.output.clean",     "true")
+                    param("nuget.pack.specFile",         "%NuGetPackSpecFiles%")
+                    param("nuget.pack.output.directory", "nupkg")
+                    param("nuget.path",                  "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                    param("nuget.pack.as.artifact",      "true")
+                    param("nuget.pack.prefer.project",   "true")
+                    param("nuget.pack.version",          "%PackageVersion%")
+                }
+            }
+
+            return buildType
+        }
+
+        private fun deployReleaseNuget(apiKey: String, buildType: BuildType) : BuildType{
+
+            buildType.steps {
+                step {
+                    name          = "NuGet Pack for NuGet.org"
+                    id            = "${buildType.id}_ReleasePackStep"
+                    type          = "jb.nuget.pack"
+                    executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
+                    param("toolPathSelector",            "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                    param("nuget.pack.output.clean",     "true")
+                    param("nuget.pack.specFile",         "%NuGetPackSpecFiles%")
+                    param("nuget.pack.include.sources",  "true")
+                    param("nuget.pack.output.directory", "nupkg")
+                    param("nuget.path",                  "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                    param("nuget.pack.prefer.project",   "true")
+                    param("nuget.pack.version",          "%PackageVersion%")
+                }
+                step {
+                    name          = "Nuget Publish to NuGet.org"
+                    id            = "${buildType.id}_ReleasePublishNugetStep"
+                    type          = "jb.nuget.publish"
+                    executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
+                    param("secure:nuget.api.key", apiKey)
+                    param("toolPathSelector",     "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                    param("nuget.path",           "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                    param("nuget.publish.source", "nuget.org")
+                    param("nuget.publish.files",  "nupkg/%NupkgName%")
+                }
+                step {
+                    name          = "Nuget Publish to SymbolSource.org"
+                    id            = "${buildType.id}_ReleasePublishSymbolsStep"
+                    type          = "jb.nuget.publish"
+                    executionMode = BuildStep.ExecutionMode.RUN_ON_SUCCESS
+                    param("secure:nuget.api.key", apiKey)
+                    param("nuget.path",           "%teamcity.tool.NuGet.CommandLine.DEFAULT%")
+                    param("nuget.publish.source", "https://nuget.smbsrc.net/")
+                    param("nuget.publish.files",  "nupkg/%NupkgSymbolsName%")
+                }
+            }
+
+            return buildType
+        }
+
         fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
             val ciVcsRoot         = ciVcsRoot(solution)
             val preReleaseVcsRoot = preReleaseVcsRoot(solution)
             val releaseVcsRoot    = releaseVcsRoot(solution)
 
-            val ciBuild           = dotNetBuild(ciBuild(solution, ciVcsRoot))
-            val preReleaseBuild   = dotNetBuild(preReleaseBuild(solution, preReleaseVcsRoot))
-            val releaseBuild      = versionBuild(tagBuild(dotNetBuild(checkForPreRelease(releaseBuild(solution, releaseVcsRoot)))))
+            val ciBuild           = fullFrameworkBuild(ciBuild(solution, ciVcsRoot))
+            val preReleaseBuild   = fullFrameworkBuild(preReleaseBuild(solution, preReleaseVcsRoot))
+            val releaseBuild      = versionBuild(tagBuild(fullFrameworkBuild(checkForPreRelease(releaseBuild(solution, releaseVcsRoot)))))
 
-            return solutionProject(
+            val solutionProject =  solutionProject(
                     solution,
                     ciVcsRoot,
                     preReleaseVcsRoot,
@@ -83,6 +147,17 @@ class FullFramework {
                     preReleaseBuild,
                     releaseBuild
             )
+
+            val deploymentProject = deploymentProject(solution)
+            solutionProject.subProject(deploymentProject)
+
+            for(project in solution.nugetProjects){
+                val deployPreReleaseBuild = deployPreReleaseNuget(deployPreRelease(solution, project, preReleaseBuild))
+                val deployReleaseBuild    = deployReleaseNuget(solution.nugetApiKey, deployRelease(solution, project, releaseBuild))
+                deploymentProject.subProject(nugetDeployProject(solution, project, deployPreReleaseBuild, deployReleaseBuild))
+            }
+
+            return solutionProject
         }
     }
 }

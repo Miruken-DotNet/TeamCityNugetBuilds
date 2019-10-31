@@ -47,15 +47,9 @@ fun solutionProject(
         param("SolutionProjectId",   solution.id)
         param("TestAssemblies",      solution.testAssemblies)
     }
-
-    subProject(deploymentProject(solution, preReleaseBuild, releaseBuild))
 }
 
-fun deploymentProject(
-        solution: NugetSolution,
-        preReleaseBuild: BuildType,
-        releaseBuild: BuildType
-) = Project {
+fun deploymentProject(solution: NugetSolution) = Project {
     id(solution.deploymentProjectId)
     uuid     = "${solution.guid}_DeploymentProject"
     parentId = AbsoluteId(solution.id)
@@ -65,33 +59,22 @@ fun deploymentProject(
         param("SHA", "")
         param("NugetApiKey", solution.nugetApiKey)
     }
-
-    for(nugetProject in solution.nugetProjects){
-        subProject(nugetDeployProject(solution, nugetProject, preReleaseBuild, releaseBuild))
-    }
 }
-
 
 fun nugetDeployProject (
         solution: NugetSolution,
         project: NugetProject,
-        preReleaseBuild: BuildType,
-        releaseBuild: BuildType) : Project = Project {
+        deployPreReleaseBuild: BuildType,
+        deployReleaseBuild: BuildType) : Project = Project {
 
-    val baseUuid = "${solution.guid}_${project.id}"
-    val baseId   = "${solution.id}_${project.id}"
-
-    id(baseId)
-    uuid        = baseUuid
+    id(project.baseId(solution))
+    uuid        = project.baseUuid(solution)
     parentId    = AbsoluteId(solution.deploymentProjectId)
     name        = project.packageName
     description = "${project.packageName} nuget package"
 
-    val deployPreRelease = deployPreReleaseNuget(deployPreRelease(solution, baseId, baseUuid, preReleaseBuild))
-    val deployRelease    = deployReleaseNuget(solution.nugetApiKey, deployRelease(solution, baseId, baseUuid, releaseBuild))
-
-    buildType(deployPreRelease)
-    buildType(deployRelease)
+    buildType(deployPreReleaseBuild)
+    buildType(deployReleaseBuild)
 
     params {
         param("NuGetPackSpecFiles", project.nuspecFile)

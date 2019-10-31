@@ -60,6 +60,38 @@ class CoreFramework {
             return buildType
         }
 
+        private fun pushPreRelease(buildType: BuildType, project: NugetProject) : BuildType{
+            buildType.steps {
+                dotnetNugetPush {
+                    name      = "Prerelease Nuget on TC Feed"
+                    packages  = "Source/${project.packageName}/bin/${project.packageName}.%PackageVersion%.nupkg"
+                    serverUrl = "%teamcity.nuget.feed.guestAuth._Root.default.v2%"
+                    apiKey    = "credentialsJSON:67fc8f44-f16c-456e-8d71-df4fcf9eceb2"
+                    param("outputDir", "nupkg")
+                    param("teamcity.build.workingDir", "/")
+                    param("configuration", "Debug")
+                    param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
+                }
+            }
+            return buildType
+        }
+
+        private fun pushRelease(buildType: BuildType, project: NugetProject, apiKeyParam: String) : BuildType{
+            buildType.steps {
+                dotnetNugetPush {
+                    name      = "Prerelease Nuget on TC Feed"
+                    packages  = "Source/${project.packageName}/bin/${project.packageName}.%PackageVersion%.nupkg"
+                    serverUrl = "%teamcity.nuget.feed.guestAuth._Root.default.v2%"
+                    apiKey    = "credentialsJSON:67fc8f44-f16c-456e-8d71-df4fcf9eceb2"
+                    param("outputDir", "nupkg")
+                    param("teamcity.build.workingDir", "/")
+                    param("configuration", "Debug")
+                    param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
+                }
+            }
+            return buildType
+        }
+
         fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
             val ciVcsRoot         = ciVcsRoot(solution)
@@ -70,7 +102,7 @@ class CoreFramework {
             val preReleaseBuild   = pack(coreBuild(preReleaseBuild(solution, preReleaseVcsRoot)))
             val releaseBuild      = versionBuild(tagBuild(pack(coreBuild(checkForPreRelease(releaseBuild(solution, releaseVcsRoot))))))
 
-            return solutionProject(
+            val solutionProject = solutionProject(
                     solution,
                     ciVcsRoot,
                     preReleaseVcsRoot,
@@ -79,6 +111,17 @@ class CoreFramework {
                     preReleaseBuild,
                     releaseBuild
             )
+
+            val deploymentProject = deploymentProject(solution)
+            solutionProject.subProject(deploymentProject)
+
+            for(project in solution.nugetProjects){
+                val deployPreReleaseBuild = pushPreRelease(deployPreRelease(solution, project, preReleaseBuild), project)
+                val deployReleaseBuild    = pushRelease(deployRelease(solution, project, releaseBuild), project, solution.nugetApiKey)
+                deploymentProject.subProject(nugetDeployProject(solution, project, deployPreReleaseBuild, deployReleaseBuild))
+            }
+
+            return solutionProject
         }
     }
 }

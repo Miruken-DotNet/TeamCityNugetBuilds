@@ -93,7 +93,10 @@ fun releaseBuild(solution: NugetSolution, releaseVcsRoot: VcsRoot) = BuildType {
     }
 }
 
-fun deployPreRelease(solution: NugetSolution, baseId: String, baseUuid: String, preReleaseBuild: BuildType) : BuildType =  BuildType {
+fun deployPreRelease(solution: NugetSolution, project: NugetProject, preReleaseBuild: BuildType) : BuildType =  BuildType {
+    val baseId   = project.baseId(solution)
+    val baseUuid = project.baseUuid(solution)
+
     id("${baseId}_DeployPreRelease")
     uuid               = "${baseUuid}_DeployPreRelease"
     name               = "Deploy PreRelease"
@@ -129,7 +132,10 @@ fun deployPreRelease(solution: NugetSolution, baseId: String, baseUuid: String, 
     }
 }
 
-fun deployRelease(solution: NugetSolution, baseId: String, baseUuid: String, releaseBuild: BuildType) : BuildType = BuildType {
+fun deployRelease(solution: NugetSolution, project: NugetProject, releaseBuild: BuildType) : BuildType = BuildType {
+    val baseId   = project.baseId(solution)
+    val baseUuid = project.baseUuid(solution)
+
     id("${baseId}_DeployRelease")
     uuid         = "${baseUuid}_DeployRelease"
     name         = "Deploy Release"
