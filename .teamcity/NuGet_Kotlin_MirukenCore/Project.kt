@@ -28,55 +28,22 @@ object Project : Project({
             nugetProjects = listOf(
                     NugetProject(
                             id          = "Miruken",
-                            packageName = "Miruken",
-                            nuspecFile  = "Source\\Miruken\\Miruken.nuspec"),
+                            packageName = "Miruken"),
                     NugetProject(
                             id          = "MirukenCastle",
-                            packageName = "Miruken.Castle",
-                            nuspecFile  = "Source\\Miruken.Castle\\Miruken.Castle.nuspec"),
+                            packageName = "Miruken.Castle"),
                     NugetProject(
                             id          = "MirukenValidate",
-                            packageName = "Miruken.Validate",
-                            nuspecFile  = "Source\\Miruken.Validate\\Miruken.Validate.nuspec"),
+                            packageName = "Miruken.Validate"),
                     NugetProject(
                             id          = "MirukenValidateCastle",
-                            packageName = "Miruken.Validate.Castle",
-                            nuspecFile  = "Source\\Miruken.Validate.Castle\\Miruken.Validate.Castle.nuspec"),
+                            packageName = "Miruken.Validate.Castle"),
                     NugetProject(
                             id          = "MirukenSecure",
-                            packageName = "Miruken.Secure",
-                            nuspecFile  = "Source\\Miruken.Secure\\Miruken.Secure.nuspec")
-            ))))
-
-    subProject(CoreFramework.configureNugetSolutionProject(NugetSolution(
-            guid              = "0df6cd1a-93d3-4135-8f13-13b0ccdfdb97",
-            parentId          = "NuGet_Kotlin_MirukenCore",
-            id                = "NuGet_Kotlin_MirukenCore_MirukenMvcSln",
-            name              = "Miruken.Mvc Solution",
-            codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.Mvc.git",
-            nugetApiKey       = "%MirukenNugetApiKey%",
-            solutionFile      = "Miruken.Mvc.sln",
-            testAssemblies    = "**\\bin\\*Test*.dll",
-            majorVersion      = "2",
-            minorVersion      = "99",
-            patchVersion      = "1",
-            nugetProjects = listOf(
+                            packageName = "Miruken.Secure"),
                     NugetProject(
-                            id          = "MirukenMvc",
-                            packageName = "Miruken.Mvc",
-                            nuspecFile  = "Source\\Miruken.Mvc\\Miruken.Mvc.nuspec"),
-                    NugetProject(
-                            id          = "MirukenMvcCastle",
-                            packageName = "Miruken.Mvc.Castle",
-                            nuspecFile  = "Source\\Miruken.Mvc.Castle\\Miruken.Mvc.Castle.nuspec"),
-                    NugetProject(
-                            id          = "MirukenMvcConsole",
-                            packageName = "Miruken.Mvc.Console",
-                            nuspecFile  = "Source\\Miruken.Mvc.Console\\Miruken.Mvc.Console.nuspec"),
-                    NugetProject(
-                            id          = "MirukenMvcWpf",
-                            packageName = "Miruken.Mvc.Wpf",
-                            nuspecFile  = "Source\\Miruken.Mvc.Wpf\\Miruken.Mvc.Wpf.nuspec")
+                            id          = "MirukenHttp",
+                            packageName = "Miruken.Http")
             ))))
 
     subProject(CoreFramework.configureNugetSolutionProject(NugetSolution(
@@ -99,21 +66,14 @@ object Project : Project({
             patchVersion      = "1",
             nugetProjects = listOf(
                     NugetProject(
-                            id          = "MirukenHttp",
-                            packageName = "Miruken.Http",
-                            nuspecFile  = "Source\\Miruken.Http\\Miruken.Http.nuspec"),
-                    NugetProject(
                             id          = "MirukenAspNet",
-                            packageName = "Miruken.AspNet",
-                            nuspecFile  = "Source\\Miruken.AspNet\\Miruken.AspNet.nuspec"),
+                            packageName = "Miruken.AspNet"),
                     NugetProject(
                             id          = "MirukenAspNetCastle",
-                            packageName = "Miruken.AspNet.Castle",
-                            nuspecFile  = "Source\\Miruken.AspNet.Castle\\Miruken.AspNet.Castle.nuspec"),
+                            packageName = "Miruken.AspNet.Castle"),
                     NugetProject(
                             id          = "MirukenAspNetSwagger",
-                            packageName = "Miruken.AspNet.Swagger",
-                            nuspecFile  = "Source\\Miruken.AspNet.Swagger\\Miruken.AspNet.Swagger.nuspec")
+                            packageName = "Miruken.AspNet.Swagger")
             ))))
 
     subProject(CoreFramework.configureNugetSolutionProject(NugetSolution(
@@ -133,11 +93,9 @@ object Project : Project({
             nugetProjects = listOf(
                     NugetProject(
                             id          = "MirukenMT",
-                            packageName = "Miruken.MassTransit",
-                            nuspecFile  = "Source\\Miruken.MassTransit\\Miruken.MassTransit.nuspec"),
+                            packageName = "Miruken.MassTransit"),
                     NugetProject(
                             id          = "MirukenMTApi",
-                            packageName = "Miruken.MassTransit.Api",
-                            nuspecFile  = "Source\\Miruken.MassTransit.Api\\Miruken.MassTransit.Api.nuspec")
+                            packageName = "Miruken.MassTransit.Api")
             ))))
 })

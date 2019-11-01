@@ -23,7 +23,7 @@ class CoreFramework {
             buildType.steps {
                 dotnetTest {
                     name = "Unit Tests"
-                    projects = "%TestAssemblies%"
+                    projects = "%Solution%"
                     param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
                 }
             }
