@@ -45,7 +45,9 @@ fun solutionProject(
         param("ReleaseProjectId",    solution.releaseBuildId)
         param("Solution",            solution.solutionFile)
         param("SolutionProjectId",   solution.id)
-        param("TestAssemblies",      solution.testAssemblies)
+
+        if(solution.testAssemblies != null)
+            param("TestAssemblies", solution.testAssemblies)
     }
 }
 

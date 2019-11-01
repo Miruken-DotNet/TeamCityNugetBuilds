@@ -21,7 +21,6 @@ object Project : Project({
             codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.git",
             nugetApiKey       = "%MirukenNugetApiKey%",
             solutionFile      = "Miruken.sln",
-            testAssemblies    = "**\\bin\\*Test*.dll",
             majorVersion      = "3",
             minorVersion      = "99",
             patchVersion      = "1",
@@ -47,20 +46,13 @@ object Project : Project({
             ))))
 
     subProject(CoreFramework.configureNugetSolutionProject(NugetSolution(
-            guid              = "815fa438-ba8b-4a82-8363-13ec84f17ad0",
+            guid              = "7e62a1a9-b045-4f9c-be42-cb9a649441e1",
             parentId          = "NuGet_Kotlin_MirukenCore",
-            id                = "NuGet_Kotlin_MirukenCore_MirukenMediateSln",
-            name              = "Miruken.Mediate Solution",
-            codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.Mediate.git",
+            id                = "NuGet_Kotlin_MirukenCore_MirukenAspNet",
+            name              = "Miruken.AspNet Solution",
+            codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.AspNet.git",
             nugetApiKey       = "%MirukenNugetApiKey%",
-            solutionFile      = "Miruken.Mediate.sln",
-            testAssemblies    = """
-                                    Test\Miruken.Mediate.Tests\bin\Miruken.Mediate.Tests.dll
-                                    Test\Miruken.Mediate.Castle.Tests\bin\Miruken.Mediate.Castle.Tests.dll
-                                    Test\Miruken.Http.Tests\bin\Miruken.Http.Tests.dll
-                                    Test\Miruken.AspNet.Castle.Tests\bin\Miruken.AspNet.Castle.Tests.dll
-                                    Test\Example.Tests\bin\Example.Tests.dll
-                                """.trimIndent(),
+            solutionFile      = "Miruken.AspNet.sln",
             majorVersion      = "4",
             minorVersion      = "99",
             patchVersion      = "1",
@@ -77,25 +69,22 @@ object Project : Project({
             ))))
 
     subProject(CoreFramework.configureNugetSolutionProject(NugetSolution(
-            guid              = "2bdb0212-b5e1-4386-9ecc-7bf98eee19b0",
+            guid              = "b4054a6e-e8bc-4f1e-868d-c01d8c1d669b",
             parentId          = "NuGet_Kotlin_MirukenCore",
-            id                = "NuGet_Kotlin_MirukenCore_MirukenMTSln",
-            name              = "Miruken.MassTransit Solution",
-            codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.MassTransit.git",
+            id                = "NuGet_Kotlin_MirukenCore_MirukenAspNetCore",
+            name              = "Miruken.AspNetCore Solution",
+            codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.AspNetCore.git",
             nugetApiKey       = "%MirukenNugetApiKey%",
-            solutionFile      = "Miruken.MassTransit.sln",
-            testAssemblies    = """
-                                    Test\IntegrationTests\bin\IntegrationTests.dll
-                                """.trimIndent(),
-            majorVersion      = "1",
-            minorVersion      = "99",
+            solutionFile      = "Miruken.AspNetCore.sln",
+            majorVersion      = "0",
+            minorVersion      = "0",
             patchVersion      = "1",
             nugetProjects = listOf(
                     NugetProject(
-                            id          = "MirukenMT",
-                            packageName = "Miruken.MassTransit"),
+                            id          = "MirukenAspNetCore",
+                            packageName = "Miruken.AspNetCore"),
                     NugetProject(
-                            id          = "MirukenMTApi",
-                            packageName = "Miruken.MassTransit.Api")
+                            id          = "MirukenAspNetCoreSwagger",
+                            packageName = "Miruken.AspNetCore.Swagger")
             ))))
 })

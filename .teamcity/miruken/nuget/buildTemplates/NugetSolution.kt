@@ -6,13 +6,14 @@ class NugetSolution(
         val parentId:       String,
         val name:           String,
         val solutionFile:   String,
-        val testAssemblies: String,
         val codeGithubUrl:  String,
         val nugetApiKey:    String,
         val majorVersion:   String,
         val minorVersion:   String,
         val patchVersion:   String,
-        val nugetProjects:  List<NugetProject>){
+        val nugetProjects:  List<NugetProject>,
+        val testAssemblies: String? = null
+){
 
     val ciVcsRootId: String
         get() = "${id}_CIVCSRoot"
