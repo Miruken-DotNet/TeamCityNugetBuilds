@@ -2,8 +2,9 @@ package miruken.nuget.buildTemplates
 
 class NugetProject(
         val id:          String,
-        val nuspecFile:  String,
-        val packageName: String){
+        val packageName: String,
+        val nuspecFile:  String? = null
+){
 
     fun baseUuid(solution: NugetSolution): String
             = "${solution.guid}_$id"

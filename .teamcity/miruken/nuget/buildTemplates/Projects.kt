@@ -77,7 +77,9 @@ fun nugetDeployProject (
     buildType(deployReleaseBuild)
 
     params {
-        param("NuGetPackSpecFiles", project.nuspecFile)
+        if(project.nuspecFile != null)
+            param("NuGetPackSpecFiles", project.nuspecFile)
+
         param("PackageName",        project.packageName)
     }
 }
