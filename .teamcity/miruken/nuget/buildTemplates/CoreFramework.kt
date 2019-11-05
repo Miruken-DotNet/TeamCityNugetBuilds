@@ -110,19 +110,24 @@ class CoreFramework {
                     ciBuild,
                     preReleaseBuild,
                     releaseBuild
-            )
-
-            val deploymentProject = deploymentProject(solution)
-            deploymentProject.params {
-                param("ArtifactsIn", """
-                    Source      => Build.zip!/Source
-                    ${solution.solutionFile} => Build.zip!
-                """.trimIndent())
-                param("ArtifactsOut", """
-                    Build.zip!/Source   => Source
-                    Build.zip!/${solution.solutionFile}
-                """.trimIndent())
+            ).also {
+                it.params {
+                    param("ArtifactsIn", """
+                        Source      => Build.zip!/Source
+                        ${solution.solutionFile} => Build.zip!
+                    """.trimIndent())
+                }
             }
+
+            val deploymentProject = deploymentProject(solution).also {
+                it.params {
+                    param("ArtifactsOut", """
+                        Build.zip!/Source   => Source
+                        Build.zip!/${solution.solutionFile}
+                    """.trimIndent())
+                }
+            }
+
             solutionProject.subProject(deploymentProject)
 
             for(project in solution.nugetProjects){
