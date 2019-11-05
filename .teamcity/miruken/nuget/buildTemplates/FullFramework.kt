@@ -46,7 +46,7 @@ class FullFramework {
             return buildType
         }
 
-        private fun fullFrameworkBuild(buildType: BuildType, solution: NugetSolution) : BuildType{
+        private fun fullFrameworkBuild(buildType: BuildType) : BuildType{
             test(compile(restoreNuget(buildType)))
 
             buildType.maxRunningBuilds   = 1
@@ -59,20 +59,6 @@ class FullFramework {
                     param("assembly-format", "%DotNetAssemblyVersion%")
                     param("info-format",     "%BuildFormatSpecification%")
                 }
-            }
-
-
-            buildType.params {
-                param("ArtifactsIn", """
-                    Source      => Build.zip!/Source
-                    packages    => Build.zip!/packages
-                    ${solution.solutionFile} => Build.zip!
-                """.trimIndent())
-                param("ArtifactsOut", """
-                    Build.zip!/Source   => Source
-                    Build.zip!/packages => packages
-                    Build.zip!/${solution.solutionFile}
-                """.trimIndent())
             }
 
             return buildType
@@ -148,9 +134,9 @@ class FullFramework {
             val preReleaseVcsRoot = preReleaseVcsRoot(solution)
             val releaseVcsRoot    = releaseVcsRoot(solution)
 
-            val ciBuild           = fullFrameworkBuild(ciBuild(solution, ciVcsRoot), solution)
-            val preReleaseBuild   = fullFrameworkBuild(preReleaseBuild(solution, preReleaseVcsRoot), solution)
-            val releaseBuild      = versionBuild(tagBuild(fullFrameworkBuild(checkForPreRelease(releaseBuild(solution, releaseVcsRoot)),solution)))
+            val ciBuild           = fullFrameworkBuild(ciBuild(solution, ciVcsRoot))
+            val preReleaseBuild   = fullFrameworkBuild(preReleaseBuild(solution, preReleaseVcsRoot))
+            val releaseBuild      = versionBuild(tagBuild(fullFrameworkBuild(checkForPreRelease(releaseBuild(solution, releaseVcsRoot)))))
 
             val solutionProject =  solutionProject(
                     solution,
@@ -163,6 +149,18 @@ class FullFramework {
             )
 
             val deploymentProject = deploymentProject(solution)
+            deploymentProject.params {
+                param("ArtifactsIn", """
+                    Source      => Build.zip!/Source
+                    packages    => Build.zip!/packages
+                    ${solution.solutionFile} => Build.zip!
+                """.trimIndent())
+                param("ArtifactsOut", """
+                    Build.zip!/Source   => Source
+                    Build.zip!/packages => packages
+                    Build.zip!/${solution.solutionFile}
+                """.trimIndent())
+            }
             solutionProject.subProject(deploymentProject)
 
             for(project in solution.nugetProjects){
