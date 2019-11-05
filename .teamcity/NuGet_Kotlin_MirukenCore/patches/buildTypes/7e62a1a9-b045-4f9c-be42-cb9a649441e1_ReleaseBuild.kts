@@ -143,7 +143,7 @@ changeBuildType(uuid("7e62a1a9-b045-4f9c-be42-cb9a649441e1_ReleaseBuild")) {
         update<DotnetTestStep>(3) {
             enabled = false
         }
-        insert(7) {
+        insert(4) {
             script {
                 name = "temp: run tests with command line"
                 scriptContent = "dotnet test %Solution%"
