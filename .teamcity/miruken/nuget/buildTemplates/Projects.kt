@@ -28,16 +28,6 @@ fun solutionProject(
     buildType(releaseBuild)
 
     params {
-        param("ArtifactsIn", """
-            Source      => Build.zip!/Source
-            packages    => Build.zip!/packages
-            ${solution.solutionFile} => Build.zip!
-        """.trimIndent())
-        param("ArtifactsOut", """
-            Build.zip!/Source   => Source
-            Build.zip!/packages => packages
-            Build.zip!/${solution.solutionFile}
-        """.trimIndent())
         param("MajorVersion",        solution.majorVersion)
         param("MinorVersion",        solution.minorVersion)
         param("PatchVersion",        solution.patchVersion)

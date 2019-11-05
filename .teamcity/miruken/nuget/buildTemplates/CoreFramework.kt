@@ -42,7 +42,7 @@ class CoreFramework {
             return buildType
         }
 
-        private fun coreBuild(buildType: BuildType) : BuildType{
+        private fun coreBuild(buildType: BuildType, solution: NugetSolution) : BuildType{
             test(compile(restoreNuget(buildType)))
 
             buildType.maxRunningBuilds   = 1
@@ -55,6 +55,17 @@ class CoreFramework {
                     param("assembly-format", "%DotNetAssemblyVersion%")
                     param("info-format",     "%BuildFormatSpecification%")
                 }
+            }
+
+            buildType.params {
+                param("ArtifactsIn", """
+                    Source      => Build.zip!/Source
+                    ${solution.solutionFile} => Build.zip!
+                """.trimIndent())
+                param("ArtifactsOut", """
+                    Build.zip!/Source   => Source
+                    Build.zip!/${solution.solutionFile}
+                """.trimIndent())
             }
 
             return buildType
@@ -98,9 +109,9 @@ class CoreFramework {
             val preReleaseVcsRoot = preReleaseVcsRoot(solution)
             val releaseVcsRoot    = releaseVcsRoot(solution)
 
-            val ciBuild           = coreBuild(ciBuild(solution, ciVcsRoot))
-            val preReleaseBuild   = pack(coreBuild(preReleaseBuild(solution, preReleaseVcsRoot)))
-            val releaseBuild      = versionBuild(tagBuild(pack(coreBuild(checkForPreRelease(releaseBuild(solution, releaseVcsRoot))))))
+            val ciBuild           = coreBuild(ciBuild(solution, ciVcsRoot), solution)
+            val preReleaseBuild   = pack(coreBuild(preReleaseBuild(solution, preReleaseVcsRoot), solution))
+            val releaseBuild      = versionBuild(tagBuild(pack(coreBuild(checkForPreRelease(releaseBuild(solution, releaseVcsRoot)), solution))))
 
             val solutionProject = solutionProject(
                     solution,
