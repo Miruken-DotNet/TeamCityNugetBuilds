@@ -5,6 +5,7 @@ import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.DotnetTestStep
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.dotnetBuild
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.dotnetTest
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.nuGetInstaller
+import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.script
 import jetbrains.buildServer.configs.kotlin.v2018_2.ui.*
 
 /*
@@ -38,6 +39,12 @@ changeBuildType(uuid("7e62a1a9-b045-4f9c-be42-cb9a649441e1_CIBuild")) {
     steps {
         update<DotnetTestStep>(2) {
             enabled = false
+        }
+        insert(3) {
+            script {
+                name = "temp: run tests with command line"
+                scriptContent = "dotnet test %Solution%"
+            }
         }
     }
 }
