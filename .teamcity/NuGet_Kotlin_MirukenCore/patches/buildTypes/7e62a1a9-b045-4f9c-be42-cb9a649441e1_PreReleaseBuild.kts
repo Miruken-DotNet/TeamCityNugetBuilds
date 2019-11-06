@@ -1,6 +1,7 @@
 package NuGet_Kotlin_MirukenCore.patches.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.v2018_2.*
+import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.DotnetPackStep
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.DotnetTestStep
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.dotnetBuild
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.dotnetPack
@@ -52,6 +53,9 @@ changeBuildType(uuid("7e62a1a9-b045-4f9c-be42-cb9a649441e1_PreReleaseBuild")) {
                 name = "temp: run tests with command line"
                 scriptContent = "dotnet test %Solution%"
             }
+        }
+        update<DotnetPackStep>(4) {
+            args = "-p:PackageVersion=%PackageVersion% -p:DebugSymbols=true -p:DebugType=pdbonly -p:Version=%DotNetAssemblyVersion% --include-symbols --include-source --no-build"
         }
     }
 }
