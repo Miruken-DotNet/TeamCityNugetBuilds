@@ -30,12 +30,12 @@ class CoreFramework {
             return buildType
         }
 
-        private fun pack(buildType: BuildType) : BuildType{
+        private fun pack(buildType: BuildType, project: NugetProject) : BuildType{
             buildType.steps {
                 dotnetPack {
                     name = ".NET CORE (pack)"
-                    projects = "%Solution%"
-                    args = "-p:PackageVersion=%PackageVersion% -p:DebugSymbols=true -p:DebugType=pdbonly -p:Version=%DotNetAssemblyVersion% --include-symbols --include-source"
+                    projects = "Source/${project.packageName}/${project.packageName}.csproj"
+                    args = "-p:PackageVersion=%PackageVersion% -p:DebugSymbols=true -p:DebugType=pdbonly -p:Version=%DotNetAssemblyVersion% --include-symbols --include-source --no-build"
                     param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
                 }
             }
@@ -99,8 +99,8 @@ class CoreFramework {
             val releaseVcsRoot    = releaseVcsRoot(solution)
 
             val ciBuild           = coreBuild(ciBuild(solution, ciVcsRoot))
-            val preReleaseBuild   = pack(coreBuild(preReleaseBuild(solution, preReleaseVcsRoot)))
-            val releaseBuild      = versionBuild(tagBuild(pack(coreBuild(checkForPreRelease(releaseBuild(solution, releaseVcsRoot))))))
+            val preReleaseBuild   = coreBuild(preReleaseBuild(solution, preReleaseVcsRoot))
+            val releaseBuild      = versionBuild(tagBuild(coreBuild(checkForPreRelease(releaseBuild(solution, releaseVcsRoot)))))
 
             val solutionProject = solutionProject(
                     solution,
@@ -131,8 +131,8 @@ class CoreFramework {
             solutionProject.subProject(deploymentProject)
 
             for(project in solution.nugetProjects){
-                val deployPreReleaseBuild = pushPreRelease(deployPreRelease(solution, project, preReleaseBuild), project)
-                val deployReleaseBuild    = pushRelease(deployRelease(solution, project, releaseBuild), solution, project)
+                val deployPreReleaseBuild = pushPreRelease(pack(deployPreRelease(solution, project, preReleaseBuild), project), project)
+                val deployReleaseBuild    = pushRelease(pack(deployRelease(solution, project, releaseBuild), project), solution, project)
                 deploymentProject.subProject(nugetDeployProject(solution, project, deployPreReleaseBuild, deployReleaseBuild))
             }
 
