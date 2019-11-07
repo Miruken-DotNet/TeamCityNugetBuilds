@@ -13,6 +13,7 @@ class CoreFramework {
                     name = "Compile"
                     projects = "%Solution%"
                     configuration = "%BuildConfiguration%"
+                    args = "-p:Version=%DotNetAssemblyVersion%"
                     param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
                 }
             }
@@ -24,6 +25,7 @@ class CoreFramework {
                 dotnetTest {
                     name = "Unit Tests"
                     projects = "%Solution%"
+                    args = "--no-build"
                     param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
                 }
             }
