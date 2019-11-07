@@ -2,7 +2,6 @@ package NuGet_Kotlin_MirukenCore.patches.buildTypes
 
 import jetbrains.buildServer.configs.kotlin.v2018_2.*
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.DotnetBuildStep
-import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.DotnetTestStep
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.dotnetBuild
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.dotnetPack
 import jetbrains.buildServer.configs.kotlin.v2018_2.buildSteps.dotnetTest
@@ -76,9 +75,6 @@ changeBuildType(uuid("923b8dd0-4464-4d2d-a137-197ad679e5cd_PreReleaseBuild")) {
     steps {
         update<DotnetBuildStep>(1) {
             args = "-p:Version=%DotNetAssemblyVersion%"
-        }
-        update<DotnetTestStep>(2) {
-            enabled = false
         }
     }
 }
