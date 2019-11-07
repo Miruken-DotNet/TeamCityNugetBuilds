@@ -14,7 +14,7 @@ fun checkForPreRelease(buildType: BuildType) : BuildType{
             scriptMode = script {
                 content = """
                         try{
-                            ${'$'}packageConfigs = @(Get-ChildItem -Path .\ -Recurse -Include packages.config)
+                            ${'$'}packageConfigs = @(Get-ChildItem -Path .\ -Recurse -Include packages.config,*.csproj)
                             foreach(${'$'}packageConfig in ${'$'}packageConfigs )
                             {
                                 ${'$'}text = Get-Content ${'$'}packageConfig -Raw
