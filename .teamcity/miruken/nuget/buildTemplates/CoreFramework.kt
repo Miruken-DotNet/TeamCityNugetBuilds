@@ -25,6 +25,7 @@ class CoreFramework {
                 dotnetTest {
                     name = "Unit Tests"
                     projects = "%Solution%"
+                    configuration = "%BuildConfiguration%"
                     args = "--no-build"
                     param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
                 }
@@ -40,6 +41,7 @@ class CoreFramework {
                     dotnetPack {
                         name = "Pack ${project.packageName}"
                         projects = "Source/${project.packageName}/${project.packageName}.csproj"
+                        configuration = "%BuildConfiguration%"
                         args = "-p:PackageVersion=%PackageVersion% -p:DebugSymbols=true -p:DebugType=pdbonly -p:Version=%DotNetAssemblyVersion% --include-symbols --include-source --no-build"
                         param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
                     }
