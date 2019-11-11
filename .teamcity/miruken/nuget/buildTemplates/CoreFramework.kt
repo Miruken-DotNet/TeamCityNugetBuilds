@@ -87,9 +87,25 @@ class CoreFramework {
         private fun pushRelease(buildType: BuildType, solution: NugetSolution, project: NugetProject) : BuildType{
             buildType.steps {
                 dotnetNugetPush {
-                    name      = "Prerelease Nuget on TC Feed"
+                    name      = "Push Nuget to Nuget.org"
                     packages  = "Source/${project.packageName}/bin/${project.packageName}.%PackageVersion%.nupkg"
                     serverUrl = "nuget.org"
+                    apiKey    = solution.nugetApiKey
+                    param("outputDir", "nupkg")
+                    param("teamcity.build.workingDir", "/")
+                    param("configuration", "Debug")
+                    param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
+                }
+            }
+            return buildType
+        }
+
+        private fun pushSymbols(buildType: BuildType, solution: NugetSolution, project: NugetProject) : BuildType{
+            buildType.steps {
+                dotnetNugetPush {
+                    name      = "Push Symbols to SymbolSource"
+                    packages  = "Source/${project.packageName}/bin/${project.packageName}.%PackageVersion%.symbols.nupkg"
+                    serverUrl = "https://nuget.smbsrc.net"
                     apiKey    = solution.nugetApiKey
                     param("outputDir", "nupkg")
                     param("teamcity.build.workingDir", "/")
@@ -140,7 +156,7 @@ class CoreFramework {
 
             for(project in solution.nugetProjects){
                 val deployPreReleaseBuild = pushPreRelease(deployPreRelease(solution, project, preReleaseBuild), project)
-                val deployReleaseBuild    = pushRelease(deployRelease(solution, project, releaseBuild), solution, project)
+                val deployReleaseBuild    = pushRelease(pushSymbols(deployRelease(solution, project, releaseBuild), solution, project),solution, project)
                 deploymentProject.subProject(nugetDeployProject(solution, project, deployPreReleaseBuild, deployReleaseBuild))
             }
 
