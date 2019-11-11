@@ -106,7 +106,7 @@ class CoreFramework {
                     name      = "Push Symbols to SymbolSource"
                     packages  = "Source/${project.packageName}/bin/${project.packageName}.%PackageVersion%.symbols.nupkg"
                     serverUrl = "https://nuget.smbsrc.net"
-                    apiKey    = solution.nugetApiKey
+                    apiKey    = "${solution.nugetApiKey}/@michaelpdudley"
                     param("outputDir", "nupkg")
                     param("teamcity.build.workingDir", "/")
                     param("configuration", "Debug")
