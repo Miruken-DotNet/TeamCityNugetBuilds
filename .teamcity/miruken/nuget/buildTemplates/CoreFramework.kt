@@ -156,7 +156,7 @@ class CoreFramework {
 
             for(project in solution.nugetProjects){
                 val deployPreReleaseBuild = pushPreRelease(deployPreRelease(solution, project, preReleaseBuild), project)
-                val deployReleaseBuild    = pushRelease(pushSymbols(deployRelease(solution, project, releaseBuild), solution, project),solution, project)
+                val deployReleaseBuild    = pushSymbols(pushRelease(deployRelease(solution, project, releaseBuild), solution, project),solution, project)
                 deploymentProject.subProject(nugetDeployProject(solution, project, deployPreReleaseBuild, deployReleaseBuild))
             }
 
