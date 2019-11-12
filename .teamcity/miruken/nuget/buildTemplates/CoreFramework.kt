@@ -13,7 +13,7 @@ class CoreFramework {
                     name = "Compile"
                     projects = "%Solution%"
                     configuration = "%BuildConfiguration%"
-                    args = "-p:Version=%DotNetAssemblyVersion%"
+                    args = "-p:Version=%DotNetAssemblyVersion% -p:DebugType=portable"
                     param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
                 }
             }
@@ -42,7 +42,7 @@ class CoreFramework {
                         name = "Pack ${project.packageName}"
                         projects = "Source/${project.packageName}/${project.packageName}.csproj"
                         configuration = "%BuildConfiguration%"
-                        args = "-p:PackageVersion=%PackageVersion% -p:DebugSymbols=true -p:DebugType=pdbonly -p:Version=%DotNetAssemblyVersion% --include-symbols --include-source --no-build"
+                        args = "-p:PackageVersion=%PackageVersion% -p:SymbolPackageFormat=snupkg --include-symbols --no-build"
                         param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
                     }
                 }
@@ -100,21 +100,21 @@ class CoreFramework {
             return buildType
         }
 
-        private fun pushSymbols(buildType: BuildType, solution: NugetSolution, project: NugetProject) : BuildType{
-            buildType.steps {
-                dotnetNugetPush {
-                    name      = "Push Symbols to SymbolSource"
-                    packages  = "Source/${project.packageName}/bin/${project.packageName}.%PackageVersion%.symbols.nupkg"
-                    serverUrl = "https://nuget.smbsrc.net"
-                    apiKey    = "${solution.nugetApiKey}/@michaelpdudley"
-                    param("outputDir", "nupkg")
-                    param("teamcity.build.workingDir", "/")
-                    param("configuration", "Debug")
-                    param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
-                }
-            }
-            return buildType
-        }
+//        private fun pushSymbols(buildType: BuildType, solution: NugetSolution, project: NugetProject) : BuildType{
+//            buildType.steps {
+//                dotnetNugetPush {
+//                    name      = "Push Symbols to SymbolSource"
+//                    packages  = "Source/${project.packageName}/bin/${project.packageName}.%PackageVersion%.symbols.nupkg"
+//                    serverUrl = "https://nuget.smbsrc.net"
+//                    apiKey    = "${solution.nugetApiKey}/@michaelpdudley"
+//                    param("outputDir", "nupkg")
+//                    param("teamcity.build.workingDir", "/")
+//                    param("configuration", "Debug")
+//                    param("dotNetCoverage.dotCover.home.path", "%teamcity.tool.JetBrains.dotCover.CommandLineTools.DEFAULT%")
+//                }
+//            }
+//            return buildType
+//        }
 
         fun configureNugetSolutionProject(solution: NugetSolution) : Project{
 
@@ -156,7 +156,7 @@ class CoreFramework {
 
             for(project in solution.nugetProjects){
                 val deployPreReleaseBuild = pushPreRelease(deployPreRelease(solution, project, preReleaseBuild), project)
-                val deployReleaseBuild    = pushSymbols(pushRelease(deployRelease(solution, project, releaseBuild), solution, project),solution, project)
+                val deployReleaseBuild    = pushRelease(deployRelease(solution, project, releaseBuild), solution, project)
                 deploymentProject.subProject(nugetDeployProject(solution, project, deployPreReleaseBuild, deployReleaseBuild))
             }
 
