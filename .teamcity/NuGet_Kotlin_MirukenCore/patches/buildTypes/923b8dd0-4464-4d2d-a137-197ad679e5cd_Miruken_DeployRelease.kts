@@ -42,6 +42,7 @@ changeBuildType(uuid("923b8dd0-4464-4d2d-a137-197ad679e5cd_Miruken_DeployRelease
         update(AbsoluteId("NuGet_Kotlin_MirukenCore_MirukenSln_ReleaseBuild")) {
             snapshot {
                 onDependencyFailure = FailureAction.CANCEL
+                onDependencyCancel = FailureAction.CANCEL
             }
 
             artifacts {
