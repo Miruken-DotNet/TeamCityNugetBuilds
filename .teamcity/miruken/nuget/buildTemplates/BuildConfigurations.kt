@@ -2,6 +2,7 @@ package miruken.nuget.buildTemplates
 
 import jetbrains.buildServer.configs.kotlin.v2018_2.BuildType
 import jetbrains.buildServer.configs.kotlin.v2018_2.CheckoutMode
+import jetbrains.buildServer.configs.kotlin.v2018_2.FailureAction
 import jetbrains.buildServer.configs.kotlin.v2018_2.VcsRoot
 import jetbrains.buildServer.configs.kotlin.v2018_2.triggers.VcsTrigger
 import jetbrains.buildServer.configs.kotlin.v2018_2.triggers.finishBuildTrigger
@@ -121,6 +122,8 @@ fun deployPreRelease(solution: NugetSolution, project: NugetProject, preReleaseB
     dependencies {
         dependency(preReleaseBuild) {
             snapshot {
+                onDependencyFailure = FailureAction.CANCEL
+                onDependencyCancel  = FailureAction.CANCEL
             }
 
             artifacts {
@@ -161,6 +164,8 @@ fun deployRelease(solution: NugetSolution, project: NugetProject, releaseBuild: 
     dependencies {
         dependency(releaseBuild){
             snapshot {
+                onDependencyFailure = FailureAction.CANCEL
+                onDependencyCancel  = FailureAction.CANCEL
             }
 
             artifacts {
