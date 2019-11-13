@@ -17,11 +17,23 @@ fun checkForPreRelease(buildType: BuildType) : BuildType{
                             ${'$'}packageConfigs = @(Get-ChildItem -Path .\ -Recurse -Include packages.config,*.csproj)
                             foreach(${'$'}packageConfig in ${'$'}packageConfigs )
                             {
-                                ${'$'}text = Get-Content ${'$'}packageConfig -Raw
+                                ${'$'}text = Get-Content ${'$'}packageConfig
                                 ${'$'}keywords = @("prerelease", "alpha", "beta")
-                                foreach(${'$'}keyword in ${'$'}keywords){
-                                    if(${'$'}text -like "*${'$'}keyword*") {
-                                        throw "Prerelease dependency found in ${'$'}(${'$'}packageConfig.FullName)"
+                                ${'$'}ignored  = @("SourceLink")
+
+                                foreach(${'$'}line in ${'$'}text) {
+                                    ${'$'}ignore = ${'$'}false
+                                    foreach(${'$'}keyword in ${'$'}ignored){
+                                        if(${'$'}line -like "*${'$'}keyword*") {
+                                            ${'$'}ignore = ${'$'}true
+                                        }
+                                    }
+                                    if(${'$'}ignore -eq ${'$'}true){ continue }
+
+                                    foreach(${'$'}keyword in ${'$'}keywords){
+                                        if(${'$'}line -like "*${'$'}keyword*") {
+                                            throw "Prerelease dependency found in ${'$'}(${'$'}packageConfig.FullName): ${'$'}line"
+                                        }
                                     }
                                 }
                             }
