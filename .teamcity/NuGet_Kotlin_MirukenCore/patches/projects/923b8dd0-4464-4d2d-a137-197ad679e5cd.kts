@@ -12,6 +12,12 @@ accordingly, and delete the patch script.
 changeProject(uuid("923b8dd0-4464-4d2d-a137-197ad679e5cd")) {
     params {
         expect {
+            param("MajorVersion", "3")
+        }
+        update {
+            param("MajorVersion", "4")
+        }
+        expect {
             param("PatchVersion", "1")
         }
         update {
