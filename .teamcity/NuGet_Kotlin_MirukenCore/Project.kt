@@ -87,4 +87,24 @@ object Project : Project({
                             id          = "MirukenAspNetCoreSwagger",
                             packageName = "Miruken.AspNetCore.Swagger")
             ))))
+
+    subProject(CoreFramework.configureNugetSolutionProject(NugetSolution(
+            guid              = "3e1f42a7-a23b-4190-90c4-1eb972e99dc1",
+            parentId          = "NuGet_Kotlin_MirukenCore",
+            id                = "NuGet_Kotlin_MirukenCore_MirukenMTSln",
+            name              = "Miruken.MassTransit Solution",
+            codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.MassTransit.git",
+            nugetApiKey       = "%MirukenNugetApiKey%",
+            solutionFile      = "Miruken.MassTransit.sln",
+            majorVersion      = "0",
+            minorVersion      = "0",
+            patchVersion      = "1",
+            nugetProjects = listOf(
+                    NugetProject(
+                            id          = "MirukenMT",
+                            packageName = "Miruken.MassTransit"),
+                    NugetProject(
+                            id          = "MirukenMTApi",
+                            packageName = "Miruken.MassTransit.Api")
+            ))))
 })
