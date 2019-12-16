@@ -17,11 +17,5 @@ changeProject(uuid("b4054a6e-e8bc-4f1e-868d-c01d8c1d669b")) {
         update {
             param("MajorVersion", "1")
         }
-        expect {
-            param("PatchVersion", "1")
-        }
-        update {
-            param("PatchVersion", "0")
-        }
     }
 }
