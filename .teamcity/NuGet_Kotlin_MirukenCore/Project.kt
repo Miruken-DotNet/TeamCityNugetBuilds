@@ -107,4 +107,21 @@ object Project : Project({
                             id          = "MirukenMTApi",
                             packageName = "Miruken.MassTransit.Api")
             ))))
+
+    subProject(CoreFramework.configureNugetSolutionProject(NugetSolution(
+            guid              = "AE583D9B-EF82-491C-A47C-275400B1F479",
+            parentId          = "NuGet_Kotlin_MirukenCore",
+            id                = "NuGet_Kotlin_MirukenCore_MirukenEFSln",
+            name              = "Miruken.EntityFramework Solution",
+            codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.EntityFramework.git",
+            nugetApiKey       = "%MirukenNugetApiKey%",
+            solutionFile      = "Miruken.EntityFramework.sln",
+            majorVersion      = "0",
+            minorVersion      = "0",
+            patchVersion      = "1",
+            nugetProjects = listOf(
+                    NugetProject(
+                            id          = "MirukenET",
+                            packageName = "Miruken.EntityFramework")
+            ))))
 })
