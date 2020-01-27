@@ -15,7 +15,7 @@ changeProject(uuid("AE583D9B-EF82-491C-A47C-275400B1F479")) {
             param("PatchVersion", "1")
         }
         update {
-            param("PatchVersion", "4")
+            param("PatchVersion", "5")
         }
     }
 }
