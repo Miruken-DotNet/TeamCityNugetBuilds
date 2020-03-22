@@ -124,4 +124,21 @@ object Project : Project({
                             id          = "MirukenET",
                             packageName = "Miruken.EntityFramework")
             ))))
+
+    subProject(CoreFramework.configureNugetSolutionProject(NugetSolution(
+            guid              = "94b7f965-6df7-4b65-a2e2-82c47836991f",
+            parentId          = "NuGet_Kotlin_MirukenCore",
+            id                = "NuGet_Kotlin_MirukenCore_MirukenQuartzSln",
+            name              = "Miruken.Quartz Solution",
+            codeGithubUrl     = "git@github.com:Miruken-DotNet/Miruken.Quartz.git",
+            nugetApiKey       = "%MirukenNugetApiKey%",
+            solutionFile      = "Miruken.Quartz.sln",
+            majorVersion      = "0",
+            minorVersion      = "0",
+            patchVersion      = "1",
+            nugetProjects = listOf(
+                    NugetProject(
+                            id          = "MirukenQuartz",
+                            packageName = "Miruken.Quartz")
+            ))))
 })
