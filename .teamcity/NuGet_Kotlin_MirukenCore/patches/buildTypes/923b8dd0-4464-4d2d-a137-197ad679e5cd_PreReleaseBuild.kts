@@ -85,5 +85,8 @@ changeBuildType(uuid("923b8dd0-4464-4d2d-a137-197ad679e5cd_PreReleaseBuild")) {
         update<DotnetPackStep>(4) {
             enabled = false
         }
+        update<DotnetPackStep>(6) {
+            enabled = false
+        }
     }
 }
