@@ -85,7 +85,10 @@ object Project : Project({
                             packageName = "Miruken.AspNetCore"),
                     NugetProject(
                             id          = "MirukenAspNetCoreSwagger",
-                            packageName = "Miruken.AspNetCore.Swagger")
+                            packageName = "Miruken.AspNetCore.Swagger"),
+                    NugetProject(
+                            id          = "MirukenAspNetCoreSignalRApi",
+                            packageName = "Miruken.AspNetCore.SignalR.Api")
             ))))
 
     subProject(CoreFramework.configureNugetSolutionProject(NugetSolution(
