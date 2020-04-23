@@ -87,7 +87,7 @@ object Project : Project({
                             id          = "MirukenAspNetCoreSwagger",
                             packageName = "Miruken.AspNetCore.Swagger"),
                     NugetProject(
-                            id          = "MirukenAspNetCoreSignalRApi",
+                            id          = "MirukenAspNCoreSigRApi",
                             packageName = "Miruken.AspNetCore.SignalR.Api")
             ))))
 
