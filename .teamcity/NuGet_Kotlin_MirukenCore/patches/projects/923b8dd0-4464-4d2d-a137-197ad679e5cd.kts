@@ -15,7 +15,7 @@ changeProject(uuid("923b8dd0-4464-4d2d-a137-197ad679e5cd")) {
             param("MajorVersion", "3")
         }
         update {
-            param("MajorVersion", "4")
+            param("MajorVersion", "5")
         }
         expect {
             param("MinorVersion", "99")
